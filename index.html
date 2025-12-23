@@ -782,7 +782,7 @@ async function searchResult() {
     loading.classList.remove("hidden");
 
     try {
-        const API_BASE = "http://127.0.0.1:8000";
+        const API_BASE = "https://jntuh-backend-7rad.onrender.com";
         const res = await fetch(`${API_BASE}/result/${htno}`);
         const json = await res.json();
 
