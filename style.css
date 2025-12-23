@@ -1,0 +1,146 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+        
+        :root {
+            --accent: #FFD700;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #080808;
+            color: #ffffff;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        /* Spotlight Effect */
+        #spotlight {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(255, 215, 0, 0.05) 0%, rgba(0,0,0,0) 50%);
+            z-index: 999;
+        }
+
+        .yellow-accent { color: var(--accent); }
+        .bg-yellow-accent { background-color: var(--accent); }
+        
+        .heading-tight { letter-spacing: -0.025em; line-height: 1.2; }
+        .text-micro { font-size: 0.65rem; letter-spacing: 0.08em; }
+
+        /* Card Interaction */
+        .interactive-card {
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .interactive-card:hover {
+            transform: translateY(-4px) scale(1.01);
+            border-color: rgba(255, 215, 0, 0.3);
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+        }
+
+        .input-focus:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
+        }
+
+        /* Animations */
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-reveal { animation: slideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+        .loader-bar {
+            width: 0%;
+            height: 2px;
+            background: var(--accent);
+            transition: width 1s ease-in-out;
+        }
+
+        /* Emoji Burst Container */
+        #burst-container {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .particle {
+            position: absolute;
+            font-size: 24px;
+            animation: particleAnim 1s ease-out forwards;
+        }
+
+        @keyframes particleAnim {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+        }
+
+        /* Styling for Info Table to match Results Table */
+.info-table td {
+    background: rgba(24, 24, 27, 0.4);
+}
+
+@media print {
+    /* Force B&W Print */
+    html, body {
+        background: #fff !important;
+        color: #000 !important;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+    /* Hide non-essential UI */
+    nav, footer, .search-section, .search-container-box, 
+    #spotlight, #burst-container, .no-print, #semesterSelect {
+        display: none !important;
+    }
+
+    /* Professional Boxed Styling for both Info and Result Tables */
+    .info-table, .boxed-table, table {
+        width: 100% !important;
+        border: 2px solid #000 !important;
+        border-collapse: collapse !important;
+        margin-bottom: 15px !important;
+    }
+
+    td, th {
+        border: 1px solid #000 !important;
+        padding: 5px 8px !important;
+        color: #000 !important;
+    }
+
+    /* Label and value formatting inside the table cells */
+    .text-micro {
+        font-size: 8px !important;
+        border-bottom: 0.5px solid #000 !important;
+        margin-bottom: 2px !important;
+        display: block !important;
+    }
+    
+    .font-bold {
+        font-size: 11px !important;
+    }
+}
+
+.social-btn {
+  width: 44px;
+  height: 44px;
+  border: 1px solid #27272a;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #a1a1aa;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+.social-btn:hover {
+  background: #FFD700;
+  color: #000;
+  border-color: #FFD700;
+  transform: translateY(-4px);
+}
