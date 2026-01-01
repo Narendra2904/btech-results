@@ -204,6 +204,7 @@
     <div class="hidden md:flex items-center space-x-8 font-semibold text-[11px] uppercase tracking-widest text-zinc-500">
       <a href="https://btech-notes.vercel.app" class="hover:text-yellow-accent">Notes</a>
             <a href="#" class="text-yellow-accent border-b-2 border-yellow-accent pb-1">Home</a>
+        <button onclick="navToggleBacklog()" id="navBacklogBtn" class="hover:text-red-500 transition-colors uppercase">Backlogs</button>
 
       <a href="https://btech-notes.vercel.app/movie.html" class="hover:text-yellow-accent">Movies</a>
     </div>
@@ -235,8 +236,7 @@
            text-sm font-extrabold uppercase tracking-widest text-zinc-400">
     <a href="https://btech-notes.vercel.app" class="block hover:text-yellow-accent">Notes</a>
     <a href="#" class="block text-yellow-accent">Home</a>
-    <a href="#" class="block hover:text-yellow-accent">Resources</a>
-    <a href="https://btech-notes.vercel.app/movie.html" class="block hover:text-yellow-accent">Movies</a>
+<button onclick="navToggleBacklog(); toggleMobileMenu()" id="mobileNavBacklogBtn" class="block w-full text-left hover:text-red-500 uppercase">Backlogs</button>    <a href="https://btech-notes.vercel.app/movie.html" class="block hover:text-yellow-accent">Movies</a>
 
     <div class="pt-4 border-t border-zinc-800 flex items-center gap-3 text-[10px]">
       <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
@@ -1200,7 +1200,114 @@ function handlePrint() {
   window.addEventListener('load', () => {
     setTimeout(window.initAppNotification, 3000);
   });
-</script>
 
+    
+/* ================= ACTIVE BACKLOG LOGIC ================= */
+function getActiveBacklogsBySem() {
+    if (!FULL_RESULT || !FULL_RESULT.semesters) return {};
+
+    const subjectMap = {};
+
+    // 1️⃣ Collect all attempts per subjectCode
+    FULL_RESULT.semesters.forEach(sem => {
+        sem.subjects.forEach(sub => {
+            const code = sub.subjectCode || sub.code;
+            if (!subjectMap[code]) {
+                subjectMap[code] = [];
+            }
+            subjectMap[code].push({
+                ...sub,
+                semesterLabel: `SEM ${sem.semester}`
+            });
+        });
+    });
+
+    const result = {};
+
+    // 2️⃣ Apply logic: If passed at least once, it is NOT a backlog
+    Object.values(subjectMap).forEach(attempts => {
+        const hasPassed = attempts.some(
+            sub => sub.grade && !["F", "S", "ABSENT", "Ab"].includes(sub.grade)
+        );
+
+        if (hasPassed) return; // Skip if passed
+
+        // ✅ Active backlog -> take the latest attempt for display
+        const last = attempts[attempts.length - 1];
+        if (!result[last.semesterLabel]) {
+            result[last.semesterLabel] = [];
+        }
+        result[last.semesterLabel].push(last);
+    });
+
+    return result;
+}
+
+
+    /* ================= NAVBAR TOGGLE LOGIC ================= */
+function navToggleBacklog() {
+    const resultBox = document.getElementById("resultContainer");
+    
+    // 1. Check if a result is already loaded
+    if (resultBox.classList.contains("hidden")) {
+        const htInput = document.getElementById("hallTicketInput");
+        if (!htInput.value.trim()) {
+            alert("Please enter a Hall Ticket number first!");
+            htInput.focus();
+            return;
+        }
+        // Auto-fetch and then show backlogs
+        searchResult().then(() => {
+            if (!IS_BACKLOG_VIEW) toggleBacklogView();
+        });
+    } else {
+        // Just toggle the view if data is already present
+        toggleBacklogView();
+    }
+}
+
+/* ================= UPDATED TOGGLE VIEW ================= */
+// Modify your existing toggleBacklogView to update Navbar styles too
+function toggleBacklogView() {
+    const btn = document.getElementById("backlogToggleBtn"); // Main UI btn
+    const navBtn = document.getElementById("navBacklogBtn"); // Navbar btn
+    const mobileNavBtn = document.getElementById("mobileNavBacklogBtn");
+    const warning = document.getElementById("backlogWarning");
+    const semSelect = document.getElementById("semesterSelect");
+    
+    IS_BACKLOG_VIEW = !IS_BACKLOG_VIEW;
+
+    if (IS_BACKLOG_VIEW) {
+        // UI Updates
+        if(btn) btn.innerHTML = `<i class="fas fa-list mr-2"></i> View All Results`;
+        semSelect.classList.add("invisible");
+        
+        // Navbar Highlight
+        [navBtn, mobileNavBtn].forEach(el => {
+            if(el) {
+                el.classList.add("text-red-500");
+                el.innerText = "VIEW ALL";
+            }
+        });
+
+        renderBacklogUI();
+    } else {
+        // UI Updates
+        if(btn) btn.innerHTML = `<i class="fas fa-exclamation-triangle mr-2"></i> View Active Backlogs`;
+        warning.classList.add("hidden");
+        semSelect.classList.remove("invisible");
+
+        // Navbar Restore
+        [navBtn, mobileNavBtn].forEach(el => {
+            if(el) {
+                el.classList.remove("text-red-500");
+                el.innerText = "BACKLOGS";
+            }
+        });
+
+        renderResult(semSelect.value);
+    }
+}
+    </script>
 </body>
 </html>
