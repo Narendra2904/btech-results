@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACTIVE BACKLOG REPORT | BACK.BENCHERS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/png" href="./assets/logo.png">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+        
+        :root { --accent: #FFD700; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #080808;
+            color: #ffffff;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        /* Spotlight Effect */
+        #spotlight {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(255, 215, 0, 0.05) 0%, rgba(0,0,0,0) 50%);
+            z-index: 999;
+        }
+
+        .yellow-accent { color: var(--accent); }
+        .bg-yellow-accent { background-color: var(--accent); }
+        .text-micro { font-size: 0.65rem; letter-spacing: 0.08em; }
+
+        /* PDF / Print Styling */
+        @media print {
+            html, body { background: #fff !important; color: #000 !important; }
+            nav, footer, .no-print, #spotlight, .search-container-box, #burst-container { display: none !important; }
+            
+            .info-table, .sem-table, table { 
+                width: 100% !important; 
+                border: 2px solid #000 !important; 
+                border-collapse: collapse !important; 
+                margin-bottom: 20px !important; 
+            }
+            td, th { 
+                border: 1px solid #000 !important; 
+                padding: 6px 10px !important; 
+                color: #000 !important; 
+                font-size: 10px !important;
+            }
+            .text-micro { 
+                font-size: 8px !important; 
+                border-bottom: 0.5px solid #000 !important; 
+                display: block !important; 
+                margin-bottom: 2px !important; 
+            }
+            .font-bold { font-size: 11px !important; }
+            .sem-header { 
+                background: #f3f4f6 !important; 
+                color: #000 !important; 
+                font-weight: 900 !important;
+                -webkit-print-color-adjust: exact; 
+            }
+        }
+
+        .social-btn {
+            width: 44px; height: 44px;
+            border: 1px solid #27272a; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            color: #a1a1aa; transition: all 0.3s ease;
+        }
+        .social-btn:hover { background: var(--accent); color: #000; border-color: var(--accent); transform: translateY(-4px); }
+        
+        .animate-reveal { animation: slideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+    <div id="spotlight"></div>
+
+     <!-- Header / Navbar -->
+<nav class="border-b border-zinc-800/60 bg-black/80 backdrop-blur-xl sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+
+    <!-- Brand -->
+    <div 
+  class="flex items-center space-x-3 group cursor-pointer"
+  onclick="location.reload()"
+>
+
+  <!-- LOGO IMAGE -->
+  <img
+    src="./assets/logo.png"
+    alt="Backbenchers Logo"
+    class="
+      w-8 h-8 
+      rounded-md 
+      transition-transform duration-300 
+      group-hover:scale-110 
+      group-hover:rotate-3
+      shadow-md
+    "
+  />
+
+  <!-- EXISTING BACK BADGE -->
+  <div
+    class="
+      bg-yellow-accent 
+      text-black 
+      font-black 
+      px-2 
+      py-0.5 
+      text-sm 
+      rounded-sm 
+      transition-transform duration-300
+      group-hover:-rotate-2
+    "
+  >
+    BACK
+  </div>
+
+  <!-- BENCHERS TEXT -->
+  <span
+    class="
+      font-extrabold 
+      text-lg 
+      tracking-tighter
+      transition-colors duration-300
+      group-hover:text-yellow-accent
+    "
+  >
+    BENCHERS
+  </span>
+</div>
+
+    <!-- Desktop Menu -->
+    <div class="hidden md:flex items-center space-x-8 font-semibold text-[11px] uppercase tracking-widest text-zinc-500">
+      <a href="https://btech-notes.vercel.app" class="hover:text-yellow-accent">Notes</a>
+    <a href="#" class="hover:text-yellow-accent border-b-2 border-yellow-accent pb-1">Home</a>
+    <a href="index.html" class="text-yellow-accent ">View All Result</a>
+      <a href="https://btech-notes.vercel.app/movie.html" class="hover:text-yellow-accent">Movies</a>
+    </div>
+
+    <!-- Right Side -->
+    <div class="flex items-center gap-4">
+
+      <!-- Print -->
+      
+
+      <!-- Status -->
+      <div class="hidden md:flex items-center gap-2 text-micro font-bold text-zinc-500
+                  bg-zinc-900/50 px-3 py-1.5 rounded-full border border-zinc-800/50">
+        <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+        SERVER: ACTIVE
+      </div>
+
+      <!-- ☰ Mobile Hamburger -->
+      <button onclick="toggleMobileMenu()"
+        class="md:hidden text-yellow-accent text-2xl focus:outline-none">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div id="mobileMenu"
+    class="md:hidden hidden bg-black border-t border-zinc-800 px-6 py-6 space-y-4
+           text-sm font-extrabold uppercase tracking-widest text-zinc-400">
+    <a href="https://btech-notes.vercel.app" class="block hover:text-yellow-accent">Notes</a>
+    
+      <a href="#" class="block hover:text-yellow-accent">Home</a>
+      <a href="index.html" class="block text-yellow-accent">View All Result</a>
+    <a href="https://btech-notes.vercel.app/movie.html" class="block hover:text-yellow-accent">Movies</a>
+
+    <div class="pt-4 border-t border-zinc-800 flex items-center gap-3 text-[10px]">
+      <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+      SERVER ACTIVE
+    </div>
+  </div>
+</nav>
+
+    <main class="flex-grow max-w-5xl mx-auto w-full px-6 py-12">
+        <div class="bg-zinc-900/30 p-5 rounded-2xl border border-zinc-800/50 shadow-2xl mb-10 search-container-box no-print">
+            <h2 class="text-yellow-accent text-[10px] font-black uppercase tracking-[0.3em] mb-4 text-center">Active Backlog Report Engine</h2>
+            <div class="flex flex-col sm:flex-row gap-3">
+                <input type="text" id="htInput" placeholder="ENTER HALL TICKET NUMBER" class="w-full bg-black/60 border border-zinc-700/50 rounded-xl px-5 py-3.5 text-sm font-bold uppercase tracking-widest input-focus text-yellow-accent" />
+                <button onclick="fetchBacklogReport()" class="bg-yellow-accent hover:bg-yellow-400 text-black font-extrabold px-10 py-3.5 rounded-xl transition-all text-xs uppercase tracking-widest shadow-lg">Generate Report</button>
+            </div>
+            <p id="errorMsg" class="hidden text-red-400 mt-4 text-[11px] font-bold text-center border border-red-400/10 py-2 rounded-lg bg-red-400/5"></p>
+        </div>
+
+        <div id="loadingState" class="hidden flex flex-col items-center py-16">
+            <div class="w-12 h-12 border-t-2 border-yellow-accent rounded-full animate-spin"></div>
+            <p class="text-zinc-600 font-bold uppercase tracking-[0.4em] text-[10px] mt-6">Searching All Attempts...</p>
+        </div>
+
+        <div id="reportArea" class="hidden space-y-8 animate-reveal">
+            <table class="w-full border-collapse border-2 border-zinc-800 info-table">
+                <tbody>
+                    <tr class="grid grid-cols-3 border-b border-zinc-800">
+                        <td class="p-3 border-r border-zinc-800 bg-zinc-900/20"><span class="text-micro font-black text-zinc-500 uppercase">Name</span><p id="resName" class="font-bold text-[12px] uppercase">---</p></td>
+                        <td class="p-3 border-r border-zinc-800 bg-zinc-900/20"><span class="text-micro font-black text-zinc-500 uppercase">Father Name</span><p id="resFather" class="font-bold text-[12px] uppercase">---</p></td>
+                        <td class="p-3 bg-zinc-900/20"><span class="text-micro font-black text-zinc-500 uppercase">Branch</span><p id="resBranch" class="font-bold text-[12px] yellow-accent uppercase">---</p></td>
+                    </tr>
+                    <tr class="grid grid-cols-3">
+                        <td class="p-3 border-r border-zinc-800 bg-zinc-900/20"><span class="text-micro font-black text-zinc-500 uppercase">Roll Number</span><p id="resRoll" class="font-bold text-[12px] yellow-accent uppercase">---</p></td>
+                        <td class="p-3 border-r border-zinc-800 bg-zinc-900/20"><span class="text-micro font-black text-zinc-500 uppercase">Col Code</span><p id="resColCode" class="font-bold text-[12px]">---</p></td>
+                        <td class="p-3 bg-zinc-900/20"><span class="text-micro font-black text-zinc-500 uppercase">College Name</span><p id="resColName" class="font-bold text-[10px] uppercase leading-tight">---</p></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="flex justify-between items-center no-print">
+                <div id="countBadge" class="bg-red-500/10 border border-red-500/30 text-red-500 px-4 py-2 rounded-lg font-black text-[10px] uppercase">---</div>
+                <button onclick="handlePrint()" class="bg-yellow-accent text-black font-black px-6 py-2.5 rounded-xl text-[10px] uppercase tracking-widest active:scale-95 transition-all"><i class="fas fa-print mr-2"></i> Print PDF</button>
+            </div>
+
+            <div id="semesterTablesContainer" class="space-y-10"></div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+<footer class="bg-black border-t border-zinc-900 pt-10 pb-5 px-6 relative">
+<div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+
+    <!-- BRAND -->
+    <div>
+      <div class="flex items-center space-x-3 mb-6 group cursor-pointer">
+        <img
+          src="./assets/logo.png"
+          alt="Backbenchers Logo"
+          class="w-10 h-10 rounded-md shadow-lg
+                 transition-transform duration-300
+                 group-hover:scale-110 group-hover:rotate-3"
+        />
+        <div>
+          <p class="font-extrabold text-lg tracking-tight text-zinc-200
+                    group-hover:text-yellow-accent transition-colors">
+            BACKBENCHERS
+          </p>
+          <p class="text-[10px] uppercase tracking-[0.35em] text-zinc-600 font-black">
+            Results Engine
+          </p>
+        </div>
+      </div>
+
+      <p class="text-zinc-600 text-[11px] leading-relaxed max-w-xs font-medium uppercase tracking-wider">
+        Fast. Free. Reliable.  
+        Built by students, for students.
+      </p>
+        <div class="mt-6">
+    <a href="https://expo.dev/artifacts/eas/hUXNz5RPAG1R9Wc8K8geDb.apk" 
+       class="inline-flex items-center gap-2 bg-zinc-900 border border-zinc-800 px-4 py-2 rounded-xl group hover:border-yellow-accent transition-all">
+       <div class="w-8 h-8 bg-yellow-accent rounded-lg flex items-center justify-center text-black group-hover:scale-110 transition-transform">
+         <i class="fas fa-robot text-sm"></i>
+       </div>
+       <div>
+         <p class="text-[10px] font-black uppercase tracking-widest text-zinc-200 leading-none">Android App</p>
+         <p class="text-[9px] text-zinc-500 font-bold mt-1">v1.0.0 • Download APK</p>
+       </div>
+    </a>
+  </div>
+    </div>
+
+    <!-- SOCIALS -->
+    <div>
+      <h4 class="font-black text-[10px] text-zinc-500 uppercase tracking-[0.3em] mb-6">
+        Connect With Us
+      </h4>
+
+      <div class="flex space-x-5">
+        <!-- Instagram -->
+        <button onclick="openPopup('instagram')"
+          class="social-btn">
+          <i class="fab fa-instagram"></i>
+        </button>
+
+        <!-- GitHub -->
+        <button onclick="openPopup('github')"
+          class="social-btn">
+          <i class="fab fa-github"></i>
+        </button>
+
+        <!-- LinkedIn -->
+        <button onclick="openPopup('linkedin')"
+          class="social-btn">
+          <i class="fab fa-linkedin-in"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- FEEDBACK -->
+    <div>
+      <div class="bg-zinc-900/50 p-6 rounded-2xl border border-zinc-800/60">
+        <h4 class="font-black text-[10px] uppercase tracking-[0.3em] mb-4 text-zinc-500">
+          Feedback
+        </h4>
+        <input
+        id="feedbackMessage"
+          type="text"
+          placeholder="Any issues?"
+          class="w-full bg-black border border-zinc-800 rounded-lg
+                 px-4 py-2.5 text-xs mb-3
+                 focus:border-yellow-accent outline-none"
+        />
+    <button
+  id="feedbackBtn"
+  onclick="sendFeedback()"
+  class="w-full bg-yellow-accent text-black font-black
+         py-2.5 rounded-lg text-[10px]
+         hover:bg-yellow-400 transition-all uppercase tracking-widest">
+  SEND
+</button>
+
+<p id="feedbackStatus"
+   class="hidden mt-3 text-[10px] font-black uppercase tracking-widest text-green-500 text-center">
+  ✅ Feedback Sent
+</p>
+
+
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM -->
+  <div class="max-w-7xl mx-auto border-t border-zinc-900/50 pt-4
+              flex flex-col md:flex-row justify-between items-center
+              text-[9px] font-black text-zinc-700 uppercase tracking-[0.3em]">
+    <p>Developed by<span class="text-green-600">NARENDRA YENAGANDULA | MADHAN MYANA</span></p>
+    <p>© 2025 Backbenchers</p>
+  </div>
+
+  <!-- SOCIAL POPUP -->
+  <!-- SOCIAL POPUP -->
+    <!-- SOCIAL POPUP -->
+<div id="socialPopup"
+     class="fixed inset-0 bg-black/70 backdrop-blur-sm z-[9999]
+            hidden flex items-center justify-center">
+
+  <div class="relative bg-white text-black w-[320px] shadow-2xl">
+
+    <!-- Close -->
+    <button onclick="closePopup()"
+      class="absolute top-3 right-3 w-8 h-8 border border-black
+             flex items-center justify-center font-black">
+      ✕
+    </button>
+
+    <!-- Header -->
+    <div class="flex flex-col items-center px-6 pt-10 pb-6">
+      <div id="popupIcon"
+           class="w-14 h-14 flex items-center justify-center mb-4">
+        <!-- icon injected by JS -->
+      </div>
+
+      <h2 id="popupTitle"
+          class="text-lg font-black tracking-widest uppercase">
+        INSTAGRAM
+      </h2>
+
+      <p class="text-[10px] text-gray-500 uppercase tracking-[0.25em] mt-1">
+        Select a developer to connect
+      </p>
+    </div>
+
+    <!-- USERS -->
+    <div id="popupUsers" class="px-6 pb-8 space-y-4">
+      <!-- users injected by JS -->
+    </div>
+
+  </div>
+</div>
+
+
+  </div>
+  
+</footer>
+    <script>
+
+        //Social Popup
+        const SOCIAL_DATA = {
+  instagram: {
+    title: "INSTAGRAM",
+    color: "bg-pink-500",
+    icon: '<i class="fab fa-instagram text-white text-2xl"></i>',
+    users: [
+      { name: "Narendra Yenagandula", url: "https://instagram.com/narendra_yenagandula" },
+      { name: "Madhan Myana", url: "https://btech-notes.vercel.app/insta.html" }
+    ]
+  },
+  github: {
+    title: "GITHUB",
+    color: "bg-black",
+    icon: '<i class="fab fa-github text-white text-2xl"></i>',
+    users: [
+      { name: "Narendra Yenagandula", url: "https://github.com/Narendra2904" },
+      { name: "Madhan Myana", url: "https://github.com/madhanmyana" }
+    ]
+  },
+  linkedin: {
+    title: "LINKEDIN",
+    color: "bg-blue-600",
+    icon: '<i class="fab fa-linkedin-in text-white text-2xl"></i>',
+    users: [
+      { name: "Narendra Yenagandula", url: "https://www.linkedin.com/in/narendra-yenagandula/" },
+      { name: "Madhan Myana", url: "https://www.linkedin.com/in/madhan-myana-7ab90a335/" }
+    ]
+  }
+};
+
+function openPopup(type) {
+  const popup = document.getElementById("socialPopup");
+  const title = document.getElementById("popupTitle");
+  const iconBox = document.getElementById("popupIcon");
+  const usersBox = document.getElementById("popupUsers");
+
+  const data = SOCIAL_DATA[type];
+  if (!data) return;
+
+  title.innerText = data.title;
+  iconBox.className = `w-14 h-14 flex items-center justify-center mb-4 ${data.color}`;
+  iconBox.innerHTML = data.icon;
+
+  usersBox.innerHTML = "";
+  data.users.forEach(u => {
+    const a = document.createElement("a");
+    a.href = u.url;
+    a.target = "_blank";
+    a.className =
+      "flex justify-between items-center border border-black px-4 py-3 font-bold hover:bg-black hover:text-white transition";
+    a.innerHTML = `<span>${u.name}</span><span>→</span>`;
+    usersBox.appendChild(a);
+  });
+
+  popup.classList.remove("hidden");
+}
+
+function closePopup() {
+  document.getElementById("socialPopup").classList.add("hidden");
+}
+
+// click outside popup to close
+document.getElementById("socialPopup")
+  .addEventListener("click", e => {
+    if (e.target.id === "socialPopup") closePopup();
+  });
+
+
+  //emailus
+  (function(){
+  emailjs.init("5kLoGgKCRJnViVqjs"); // 👈 replace
+})();
+
+
+function sendFeedback() {
+  const msgInput = document.getElementById("feedbackMessage");
+  const btn = document.getElementById("feedbackBtn");
+  const status = document.getElementById("feedbackStatus");
+
+  const msg = msgInput.value.trim();
+  if (!msg) return;
+
+  // UI: sending
+  btn.innerText = "SENDING...";
+  btn.disabled = true;
+  btn.classList.add("opacity-60", "cursor-not-allowed");
+
+  emailjs.send("service_sh3psxo", "template_kugkk3i", {
+    from_name: "Backbenchers User",
+    from_email: "no-reply@backbenchers",
+    message: msg
+  })
+  .then(() => {
+    // SUCCESS UI
+    status.classList.remove("hidden");
+    msgInput.value = "";
+
+    btn.innerText = "SENT ✓";
+
+    // reset after 3 sec
+    setTimeout(() => {
+      btn.innerText = "SEND";
+      btn.disabled = false;
+      btn.classList.remove("opacity-60", "cursor-not-allowed");
+      status.classList.add("hidden");
+    }, 3000);
+  })
+  .catch(err => {
+    console.error(err);
+    btn.innerText = "FAILED";
+    btn.disabled = false;
+  });
+}
+
+        // Interactive UI
+        document.addEventListener("mousemove", e => {
+            const s = document.getElementById("spotlight");
+            s.style.setProperty("--x", e.clientX + "px");
+            s.style.setProperty("--y", e.clientY + "px");
+        });
+
+        function toggleMobileMenu() { document.getElementById("mobileMenu").classList.toggle("hidden"); }
+
+        async function fetchBacklogReport() {
+            const ht = document.getElementById("htInput").value.trim().toUpperCase();
+            const loader = document.getElementById("loadingState");
+            const area = document.getElementById("reportArea");
+            const error = document.getElementById("errorMsg");
+
+            if (!ht) return;
+            error.classList.add("hidden"); area.classList.add("hidden"); loader.classList.remove("hidden");
+
+            try {
+                const res = await fetch(`https://jntuh-backend-7rad.onrender.com/result/${ht}`);
+                const json = await res.json();
+                if (!json.data) throw new Error("Roll Number not found.");
+
+                const data = typeof json.data === 'string' ? JSON.parse(json.data.replace(/'/g, '"')) : json.data;
+
+                // Student Info Mapping
+                document.getElementById("resName").innerText = data.name || "---";
+                document.getElementById("resFather").innerText = data.fatherName || "---";
+                document.getElementById("resBranch").innerText = data.branch || "---";
+                document.getElementById("resRoll").innerText = data.hallTicket || "---";
+                document.getElementById("resColCode").innerText = data.collegeCode || "---";
+                document.getElementById("resColName").innerText = data.college || "---";
+
+                // 🟢 Logic strictly from activeBacklogs.ts
+                const subjectMap = {};
+                data.semesters.forEach(sem => {
+                    sem.subjects.forEach(sub => {
+                        const code = sub.subjectCode;
+                        if (!subjectMap[code]) { subjectMap[code] = []; }
+                        subjectMap[code].push({ ...sub, semesterLabel: `SEM ${sem.semester}` });
+                    });
+                });
+
+                const backlogResult = {};
+                let total = 0;
+
+                Object.values(subjectMap).forEach(attempts => {
+                    // Logic: If passed at least once (grade !== "F") → NOT a backlog
+                    const hasPassed = attempts.some(sub => sub.grade && sub.grade !== "F");
+
+                    if (!hasPassed) {
+                        const lastAttempt = attempts[attempts.length - 1]; // Latest for display
+                        if (!backlogResult[lastAttempt.semesterLabel]) { 
+                            backlogResult[lastAttempt.semesterLabel] = []; 
+                        }
+                        backlogResult[lastAttempt.semesterLabel].push(lastAttempt);
+                        total++;
+                    }
+                });
+
+                document.getElementById("countBadge").innerText = `⚠️ ${total} Pending Subjects Found`;
+                renderSemesterTables(backlogResult);
+                
+                loader.classList.add("hidden"); 
+                area.classList.remove("hidden");
+            } catch (err) {
+                loader.classList.add("hidden"); 
+                error.innerText = err.message; 
+                error.classList.remove("hidden");
+            }
+        }
+
+        function renderSemesterTables(grouped) {
+            const container = document.getElementById("semesterTablesContainer");
+            container.innerHTML = "";
+            const sortedSems = Object.keys(grouped).sort();
+
+            if (sortedSems.length === 0) {
+                container.innerHTML = `<p class="text-center py-10 text-green-500 font-black uppercase tracking-widest">🎉 No Active Backlogs Detected</p>`;
+                return;
+            }
+
+            sortedSems.forEach(sem => {
+                const div = document.createElement("div");
+                div.innerHTML = `
+                    <h3 class="text-yellow-accent font-black text-xs mb-3 uppercase tracking-widest border-l-4 border-yellow-accent pl-2 sem-header">${sem}</h3>
+                    <div class="overflow-x-auto rounded-xl border border-zinc-800 sem-table">
+                        <table class="w-full text-left">
+                            <thead class="bg-zinc-900/50 text-zinc-400 text-[9px] uppercase">
+                                <tr>
+                                    <th class="px-4 py-3 border border-zinc-800">Code</th>
+                                    <th class="px-4 py-3 border border-zinc-800">Subject Name</th>
+                                    <th class="px-3 py-3 border border-zinc-800 text-center">Int</th>
+                                    <th class="px-3 py-3 border border-zinc-800 text-center">Ext</th>
+                                    <th class="px-3 py-3 border border-zinc-800 text-center">Tot</th>
+                                    <th class="px-3 py-3 border border-zinc-800 text-center">Gr</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-[11px]">
+                                ${grouped[sem].map(s => `
+                                    <tr class="border-b border-zinc-800/50">
+                                        <td class="px-4 py-3 border-r border-zinc-800 font-mono text-zinc-500">${s.subjectCode}</td>
+                                        <td class="px-4 py-3 border-r border-zinc-800 font-bold uppercase">${s.subjectName}</td>
+                                        <td class="px-3 py-3 border-r border-zinc-800 text-center">${s.internal || 0}</td>
+                                        <td class="px-3 py-3 border-r border-zinc-800 text-center">${s.external || 0}</td>
+                                        <td class="px-3 py-3 border-r border-zinc-800 text-center font-black">${(Number(s.internal)||0) + (Number(s.external)||0)}</td>
+                                        <td class="px-3 py-3 text-center text-red-500 font-black">${s.grade}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>`;
+                container.appendChild(div);
+            });
+        }
+
+        function handlePrint() {
+            const originalTitle = document.title;
+            const rollNo = document.getElementById("resRoll").innerText.trim();
+            if (rollNo && rollNo !== "---") { document.title = rollNo; }
+            window.print();
+            setTimeout(() => { document.title = originalTitle; }, 100);
+        }
+    </script>
+</body>
+</html>
