@@ -923,34 +923,32 @@ function renderSemester(sem) {
     addSemesterHeader(sem.semester);
     const subjects = sem.subjects || [];
     
-    // Tracks subjects we've already displayed to detect RC/RV
-    const displayedSubjectCodes = new Set();
+    // Tracks subjects already displayed in THIS semester to mark repeats
+    const displayedInThisSem = new Set();
 
-    // Separate based on attempt type
     const regularSubjects = subjects.filter(s => s.attempt === "regular");
-    const supplySubjects = subjects.filter(s => s.attempt === "supply");
+    const supplySubjects = subjects.filter(s => s.attempt === "supply" || s.attempt === "rcrv");
 
     if (regularSubjects.length > 0) {
         addSubHeader("REGULAR RESULTS", regularSubjects[0].examCode || "");
         regularSubjects.forEach(sub => {
             const code = sub.subjectCode || sub.code;
-            // Check if we've seen this subject in this sem already
-            const isRCRV = displayedSubjectCodes.has(code);
+            const isRCRV = displayedInThisSem.has(code);
             addRow(sub, isRCRV);
-            displayedSubjectCodes.add(code);
+            displayedInThisSem.add(code);
         });
     }
     
     if (supplySubjects.length > 0) {
-        // Group supply subjects by attempt number or exam code to keep headers clean
         const lastSupply = supplySubjects[supplySubjects.length - 1];
-        addSubHeader("SUPPLY RESULTS", lastSupply.examCode || "", lastSupply.attemptNumber || "");
+        addSubHeader("SUPPLY / RC-RV RESULTS", lastSupply.examCode || "", lastSupply.attemptNumber || "");
         
         supplySubjects.forEach(sub => {
             const code = sub.subjectCode || sub.code;
-            const isRCRV = displayedSubjectCodes.has(code);
+            // If the code was already in Regular, this supply entry is a repeat (RC/RV)
+            const isRCRV = displayedInThisSem.has(code);
             addRow(sub, isRCRV);
-            displayedSubjectCodes.add(code);
+            displayedInThisSem.add(code);
         });
     }
     addSGPARow(calculateSGPA(subjects));
@@ -996,39 +994,44 @@ function addSubHeader(title, examCode = "", attemptNum = "") {
   tbody.appendChild(tr);
 }
 
-function addRow(sub, isRCRV = false) {
+function addRow(sub, isRepeatedInUI = false) {
     const tbody = document.getElementById("resultTableBody");
     const tr = document.createElement("tr");
     
     // Identify Fail/Absent status
-    const isFailed = sub.grade === "F" || sub.grade === "S" || sub.grade === "ABSENT";
+    const isFailed = ["F", "S", "ABSENT", "Ab"].includes(sub.grade);
+    
+    // Check if backend or frontend logic says this is RC/RV
+    const isRCRV = isRepeatedInUI || sub.attempt === "rcrv";
     
     // Apply conditional background colors
-    // Failed: Light red tint | RC/RV: Light blue tint | Default: Transparent
     let rowBg = "transparent";
-    if (isFailed) rowBg = "rgba(239, 68, 68, 0.1)"; // Red-500 with low opacity
-    else if (isRCRV) rowBg = "rgba(59, 130, 246, 0.05)"; // Blue-500 with low opacity
+    if (isFailed) {
+        rowBg = "rgba(239, 68, 68, 0.12)"; // Subtle Red for Fail
+    } else if (isRCRV) {
+        rowBg = "rgba(59, 130, 246, 0.08)"; // Subtle Blue for RC/RV
+    }
 
     // RC/RV Badge HTML
     const rcrvBadge = isRCRV 
         ? `<span class="ml-2 bg-blue-500/20 text-blue-400 text-[8px] px-1.5 py-0.5 rounded border border-blue-500/30 font-black">RC/RV</span>` 
         : "";
 
-    // Grade styling
-    const gradeClass = isFailed ? "text-red-500 font-black" : "text-zinc-200";
+    // Grade styling - make Failures pop
+    const gradeClass = isFailed ? "text-red-500 font-black scale-110" : "text-zinc-200";
 
     tr.style.backgroundColor = rowBg;
     tr.innerHTML = `
         <td class="px-2 md:px-6 py-3 border border-zinc-800 font-mono text-zinc-500 text-[9px] md:text-[12px]">${sub.subjectCode}</td>
         <td class="px-2 md:px-6 py-3 border border-zinc-800 font-medium text-[9px] md:text-[12px]">
             <div class="flex items-center">
-                <span class="${isFailed ? 'text-red-200/80' : ''}">${sub.subjectName}</span>
+                <span class="${isFailed ? 'text-red-300' : ''}">${sub.subjectName}</span>
                 ${rcrvBadge}
             </div>
         </td>
-        <td class="px-1 md:px-4 py-3 border border-zinc-800 text-center text-[9px] md:text-[12px]">${sub.internal}</td>
-        <td class="px-1 md:px-4 py-3 border border-zinc-800 text-center text-[9px] md:text-[12px]">${sub.external}</td>
-        <td class="px-1 md:px-4 py-3 border border-zinc-800 text-center text-[9px] md:text-[12px]">${sub.total}</td>
+        <td class="px-1 md:px-4 py-3 border border-zinc-800 text-center text-[9px] md:text-[12px]">${sub.internal || '0'}</td>
+        <td class="px-1 md:px-4 py-3 border border-zinc-800 text-center text-[9px] md:text-[12px]">${sub.external || '0'}</td>
+        <td class="px-1 md:px-4 py-3 border border-zinc-800 text-center text-[9px] md:text-[12px]">${sub.total || '0'}</td>
         <td class="px-1 md:px-4 py-3 border border-zinc-800 text-center text-[9px] md:text-[12px] ${gradeClass}">${sub.grade}</td>
         <td class="px-1 md:px-4 py-3 border border-zinc-800 text-center text-[9px] md:text-[12px]">${sub.credits}</td>`;
     
