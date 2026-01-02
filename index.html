@@ -1085,44 +1085,65 @@ document.getElementById("hallTicketInput")
 })();
 
 
-function sendFeedback() {
-  const msgInput = document.getElementById("feedbackMessage");
-  const btn = document.getElementById("feedbackBtn");
-  const status = document.getElementById("feedbackStatus");
+/* ---------- FEEDBACK LOGIC (WEB3FORMS) ---------- */
+async function sendFeedback() {
+    const msgInput = document.getElementById("feedbackMessage");
+    const btn = document.getElementById("feedbackBtn");
+    const status = document.getElementById("feedbackStatus");
+    const rollNo = document.getElementById("resRoll").innerText; // Capture user context
 
-  const msg = msgInput.value.trim();
-  if (!msg) return;
+    const msg = msgInput.value.trim();
+    if (!msg) return;
 
-  // UI: sending
-  btn.innerText = "SENDING...";
-  btn.disabled = true;
-  btn.classList.add("opacity-60", "cursor-not-allowed");
+    // UI Loading State
+    btn.innerText = "SENDING...";
+    btn.disabled = true;
+    btn.classList.add("opacity-60", "cursor-not-allowed");
 
-  emailjs.send("service_sh3psxo", "template_kugkk3i", {
-    from_name: "Backbenchers User",
-    from_email: "no-reply@backbenchers",
-    message: msg
-  })
-  .then(() => {
-    // SUCCESS UI
-    status.classList.remove("hidden");
-    msgInput.value = "";
+    try {
+        const response = await fetch("https://api.web3forms.com/submit", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+            },
+            body: JSON.stringify({
+                access_key: "1545353f-657c-49b8-8de7-d3224c4c4d40", // 👈 PASTE YOUR KEY HERE
+                subject: `New Feedback from ${rollNo}`,
+                from_name: "Backbenchers Results Portal",
+                message: msg,
+                hall_ticket: rollNo
+            }),
+        });
 
-    btn.innerText = "SENT ✓";
+        const result = await response.json();
 
-    // reset after 3 sec
-    setTimeout(() => {
-      btn.innerText = "SEND";
-      btn.disabled = false;
-      btn.classList.remove("opacity-60", "cursor-not-allowed");
-      status.classList.add("hidden");
-    }, 3000);
-  })
-  .catch(err => {
-    console.error(err);
-    btn.innerText = "FAILED";
-    btn.disabled = false;
-  });
+        if (result.success) {
+            // SUCCESS UI
+            status.classList.remove("hidden");
+            status.innerText = "✅ Feedback Sent";
+            msgInput.value = "";
+            btn.innerText = "SENT ✓";
+        } else {
+            throw new Error("Failed to send");
+        }
+    } catch (err) {
+        console.error(err);
+        btn.innerText = "FAILED";
+        status.classList.remove("hidden");
+        status.innerText = "❌ Error Sending";
+        status.classList.replace("text-green-500", "text-red-500");
+    } finally {
+        // Reset button after 3 seconds
+        setTimeout(() => {
+            btn.innerText = "SEND";
+            btn.disabled = false;
+            btn.classList.remove("opacity-60", "cursor-not-allowed");
+            status.classList.add("hidden");
+            // Reset colors for next attempt
+            status.classList.replace("text-red-500", "text-green-500");
+        }, 3000);
+    }
 }
 
 
