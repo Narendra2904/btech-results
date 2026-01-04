@@ -563,14 +563,15 @@ async function sendFeedback() {
                 "Content-Type": "application/json",
                 Accept: "application/json",
             },
-            body: JSON.stringify({
-                access_key: "a97eb536-0fc7-4209-96ff-cc48e11fe234",
-                subject: `New Feedback: ${name}`, // Makes subject line unique
-                from_name: name,                // This shows the name in your inbox list
-                name: name,                     // This shows the name inside the email body
-                message: msg,
-                hall_ticket: rollNo
-            }),
+           body: JSON.stringify({
+    access_key: "...",
+    subject: `New Feedback from ${name}`,
+    from_name: name,
+    name: name,
+    message: `Sender: ${name}\nFeedback: ${msg}`, // forces name inside email body
+    hall_ticket: rollNo
+})
+,
         });
 
         const result = await response.json();
@@ -1297,6 +1298,7 @@ async function sendFeedback() {
         }
     });
 });
+
 
 
 
