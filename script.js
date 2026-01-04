@@ -65,11 +65,32 @@ document.getElementById("socialPopup")
     if (e.target.id === "socialPopup") closePopup();
   });
 
+/* ================= IMPROVED MOBILE MENU LOGIC ================= */
+
 function toggleMobileMenu() {
-  const menu = document.getElementById("mobileMenu");
-  menu.classList.toggle("hidden");
+    const menu = document.getElementById("mobileMenu");
+    const icon = document.querySelector('nav button i'); // Targets the hamburger icon
+    
+    if (menu.classList.contains("hidden")) {
+        // Open Menu
+        menu.classList.remove("hidden");
+        menu.classList.add("animate-reveal"); // Adds your slide-up animation
+        if (icon) icon.className = "fas fa-times"; // Change to 'X' icon
+    } else {
+        // Close Menu
+        menu.classList.add("hidden");
+        if (icon) icon.className = "fas fa-bars"; // Change back to Hamburger
+    }
 }
 
+// Close mobile menu automatically when a link is clicked
+document.querySelectorAll('#mobileMenu a').forEach(link => {
+    link.addEventListener('click', () => {
+        document.getElementById("mobileMenu").classList.add("hidden");
+        const icon = document.querySelector('nav button i');
+        if (icon) icon.className = "fas fa-bars";
+    });
+});
 function calculateCGPA(semesters) {
     let totalCredits = 0;
     let totalPoints = 0;
@@ -184,7 +205,6 @@ const GRADE_POINTS = {
 };
 
 /* ================= MARK SUPPLY ================= */
-/* ================= MARK ATTEMPTS GLOBALLY ================= */
 function markSupplySubjects(semesters) {
   if (!Array.isArray(semesters)) return;
 
@@ -212,7 +232,6 @@ function markSupplySubjects(semesters) {
 
 
 
-/* ================= SEARCH ================= */
 /* ================= SEARCH ================= */
 async function searchResult() {
     const htno = document.getElementById("hallTicketInput").value.trim().toUpperCase();
@@ -263,7 +282,6 @@ async function searchResult() {
         markSupplySubjects(FULL_RESULT.semesters);
 
         /* ================= DROPDOWN ================= */
-        /* ================= DROPDOWN SETUP ================= */
         const semSelect = document.getElementById("semesterSelect");
         semSelect.innerHTML = "";
 
@@ -297,7 +315,7 @@ uniqueSemNames.forEach((semName) => {
         errorMsg.classList.remove("hidden");
         loading.classList.add("hidden");
     }
-} // <--- This closes searchResult
+} 
 
 /* ================= MOVE THESE OUTSIDE ================= */
 
@@ -329,8 +347,6 @@ function calculateCGPA(semesters) {
 }
 
 /* ================= CONSOLIDATED RENDER LOGIC ================= */
-/* ================= CONSOLIDATED RENDER LOGIC ================= */
-/* ================= CONSOLIDATED RENDER LOGIC ================= */
 function renderResult(mode) {
     if (!FULL_RESULT || !Array.isArray(FULL_RESULT.semesters)) return;
     const tbody = document.getElementById("resultTableBody");
@@ -361,18 +377,44 @@ function renderResult(mode) {
 function renderSemester(sem) {
     addSemesterHeader(sem.semester);
     const subjects = sem.subjects || [];
-    const regularSubjects = subjects.filter(s => s.attempt === "regular");
-    const supplySubjects = subjects.filter(s => s.attempt === "supply");
+    
+    // 1. Map to count occurrences of each subject in THIS semester
+    const subjectCounts = {};
+    subjects.forEach(sub => {
+        const code = sub.subjectCode || sub.code;
+        subjectCounts[code] = (subjectCounts[code] || 0) + 1;
+    });
 
+    // 2. Track which codes we have already printed to identify the "repeat" row
+    const printedInThisSem = new Set();
+
+    const regularSubjects = subjects.filter(s => s.attempt === "regular");
+    const supplySubjects = subjects.filter(s => s.attempt === "supply" || s.attempt === "rcrv");
+
+    // Render Regular
     if (regularSubjects.length > 0) {
         addSubHeader("REGULAR RESULTS", regularSubjects[0].examCode || "");
-        regularSubjects.forEach(addRow);
+        regularSubjects.forEach(sub => {
+            const code = sub.subjectCode || sub.code;
+            // It is RC/RV ONLY if count > 1 AND we already printed one
+            const isRCRV = subjectCounts[code] > 1 && printedInThisSem.has(code);
+            addRow(sub, isRCRV);
+            printedInThisSem.add(code);
+        });
     }
     
+    // Render Supply
     if (supplySubjects.length > 0) {
         const lastSupply = supplySubjects[supplySubjects.length - 1];
         addSubHeader("SUPPLY RESULTS", lastSupply.examCode || "", lastSupply.attemptNumber || "");
-        supplySubjects.forEach(addRow);
+        
+        supplySubjects.forEach(sub => {
+            const code = sub.subjectCode || sub.code;
+            // It is RC/RV ONLY if count > 1 AND we already printed one
+            const isRCRV = subjectCounts[code] > 1 && printedInThisSem.has(code);
+            addRow(sub, isRCRV);
+            printedInThisSem.add(code);
+        });
     }
     addSGPARow(calculateSGPA(subjects));
 }
@@ -389,21 +431,21 @@ function addSubHeader(title, examCode = "", attemptNum = "") {
   const tbody = document.getElementById("resultTableBody");
   const tr = document.createElement("tr");
   
-  // Format labels for attempt and code
+  // Badge styling for attempt and exam code
   const attemptHtml = attemptNum ? `<span class="ml-2 bg-zinc-800 text-[8px] md:text-[9px] px-2 py-0.5 rounded border border-zinc-700 text-zinc-400 font-mono">ATTEMPT: ${attemptNum}</span>` : "";
   const codeHtml = examCode ? `<span class="ml-2 md:ml-3 text-[8px] md:text-[9px] text-zinc-500 font-mono">[CODE: ${examCode}]</span>` : "";
   
   let officialLink = "";
   if (examCode && FULL_RESULT && FULL_RESULT.hallTicket) {
-      // Constructs the JNTUH official result URL
+      // Official JNTUH result URL construction
       const baseUrl = "http://results.jntuh.ac.in/results/resultAction";
       const params = `?degree=btech&examCode=${examCode}&etype=r17&result=null&grad=null&type=intgrade&htno=${FULL_RESULT.hallTicket}`;
       
-      // The "no-print" class ensures this button is hidden in the PDF
+      // "no-print" class ensures this disappears in the PDF print
       officialLink = `
         <a href="${baseUrl}${params}" target="_blank" 
            class="no-print ml-auto text-[8px] md:text-[9px] bg-yellow-accent/10 hover:bg-yellow-accent/20 text-yellow-accent border border-yellow-accent/30 px-2 py-1 rounded transition-all flex items-center gap-1">
-           <i class="fas fa-external-link-alt text-[7px]"></i> DIRECT LINK
+           <i class="fas fa-external-link-alt text-[7px]"></i> OFFICIAL RESULT
         </a>`;
   }
   
@@ -417,20 +459,46 @@ function addSubHeader(title, examCode = "", attemptNum = "") {
   tbody.appendChild(tr);
 }
 
-function addRow(sub) {
-  const tbody = document.getElementById("resultTableBody");
-  const tr = document.createElement("tr");
-  tr.innerHTML = `
-    <td class="px-2 md:px-6 py-3 border border-zinc-800 font-mono text-zinc-400 text-[9px] md:text-[12px]">${sub.subjectCode}</td>
-    <td class="px-2 md:px-6 py-3 border border-zinc-800 font-medium text-[9px] md:text-[12px]">${sub.subjectName}</td>
-    <td class="px-1 md:px-4 py-3 border border-zinc-800 text-center text-[9px] md:text-[12px]">${sub.internal}</td>
-    <td class="px-1 md:px-4 py-3 border border-zinc-800 text-center text-[9px] md:text-[12px]">${sub.external}</td>
-    <td class="px-1 md:px-4 py-3 border border-zinc-800 text-center text-[9px] md:text-[12px]">${sub.total}</td>
-    <td class="px-1 md:px-4 py-3 border border-zinc-800 text-center font-bold text-[9px] md:text-[12px]">${sub.grade}</td>
-    <td class="px-1 md:px-4 py-3 border border-zinc-800 text-center text-[9px] md:text-[12px]">${sub.credits}</td>`;
-  tbody.appendChild(tr);
+function addRow(sub, isRCRV = false) {
+    const tbody = document.getElementById("resultTableBody");
+    const tr = document.createElement("tr");
+    
+    const isFailed = ["F", "S", "ABSENT", "Ab"].includes(sub.grade);
+    
+    // Highlighting Logic
+    let rowBg = "transparent";
+    if (isFailed) {
+        rowBg = "rgba(239, 68, 68, 0.12)"; // Red for Fail
+    } else if (isRCRV) {
+        rowBg = "rgba(59, 130, 246, 0.08)"; // Blue for RC/RV
+    }
+
+    // Badge logic: Only shows if the repeat logic above triggered it
+    const rcrvBadge = isRCRV 
+        ? `<span class="ml-2 bg-blue-500/20 text-blue-400 text-[8px] px-1.5 py-0.5 rounded border border-blue-500/30 font-black">RC/RV</span>` 
+        : "";
+
+    const gradeClass = isFailed ? "text-red-500 font-black" : "text-zinc-200";
+
+    tr.style.backgroundColor = rowBg;
+    tr.innerHTML = `
+        <td class="px-2 md:px-6 py-3 border border-zinc-800 font-mono text-zinc-500 text-[9px] md:text-[12px]">${sub.subjectCode}</td>
+        <td class="px-2 md:px-6 py-3 border border-zinc-800 font-medium text-[9px] md:text-[12px]">
+            <div class="flex items-center">
+                <span class="${isFailed ? 'text-red-300' : ''}">${sub.subjectName}</span>
+                ${rcrvBadge}
+            </div>
+        </td>
+        <td class="px-1 md:px-4 py-3 border border-zinc-800 text-center text-[9px] md:text-[12px]">${sub.internal || '0'}</td>
+        <td class="px-1 md:px-4 py-3 border border-zinc-800 text-center text-[9px] md:text-[12px]">${sub.external || '0'}</td>
+        <td class="px-1 md:px-4 py-3 border border-zinc-800 text-center text-[9px] md:text-[12px]">${sub.total || '0'}</td>
+        <td class="px-1 md:px-4 py-3 border border-zinc-800 text-center text-[9px] md:text-[12px] ${gradeClass}">${sub.grade}</td>
+        <td class="px-1 md:px-4 py-3 border border-zinc-800 text-center text-[9px] md:text-[12px]">${sub.credits}</td>`;
+    
+    tbody.appendChild(tr);
 }
 
+            
 function addSGPARow(sgpa) {
   const tbody = document.getElementById("resultTableBody");
   const tr = document.createElement("tr");
@@ -455,27 +523,6 @@ function handlePrint() {
     setTimeout(() => { document.title = originalTitle; }, 100);
 }
 
-/* ================= MOBILE SWIPE ================= */
-
-let touchStartX = 0;
-
-document.addEventListener("touchstart", e => {
-  touchStartX = e.changedTouches[0].screenX;
-});
-
-document.addEventListener("touchend", e => {
-  const diff = e.changedTouches[0].screenX - touchStartX;
-  const select = document.getElementById("semesterSelect");
-  if (!select || Math.abs(diff) < 50) return;
-
-  if (diff < 0 && select.selectedIndex < select.options.length - 1)
-    select.selectedIndex++;
-  if (diff > 0 && select.selectedIndex > 0)
-    select.selectedIndex--;
-
-  CURRENT_VIEW = select.value;
-  renderResult(CURRENT_VIEW);
-});
 
 /* ================= ENTER KEY ================= */
 
@@ -484,51 +531,70 @@ document.getElementById("hallTicketInput")
     if (e.key === "Enter") searchResult();
   });
 
-  
-
-  (function(){
+(function(){
   emailjs.init("5kLoGgKCRJnViVqjs"); // 👈 replace
 })();
 
 
-function sendFeedback() {
-  const msgInput = document.getElementById("feedbackMessage");
-  const btn = document.getElementById("feedbackBtn");
-  const status = document.getElementById("feedbackStatus");
+/* ---------- FEEDBACK LOGIC (WEB3FORMS) ---------- */
+async function sendFeedback() {
+    const msgInput = document.getElementById("feedbackMessage");
+    const btn = document.getElementById("feedbackBtn");
+    const status = document.getElementById("feedbackStatus");
+    const rollNo = document.getElementById("resRoll").innerText; // Capture user context
 
-  const msg = msgInput.value.trim();
-  if (!msg) return;
+    const msg = msgInput.value.trim();
+    if (!msg) return;
 
-  // UI: sending
-  btn.innerText = "SENDING...";
-  btn.disabled = true;
-  btn.classList.add("opacity-60", "cursor-not-allowed");
+    // UI Loading State
+    btn.innerText = "SENDING...";
+    btn.disabled = true;
+    btn.classList.add("opacity-60", "cursor-not-allowed");
 
-  emailjs.send("service_sh3psxo", "template_kugkk3i", {
-    from_name: "Backbenchers User",
-    from_email: "no-reply@backbenchers",
-    message: msg
-  })
-  .then(() => {
-    // SUCCESS UI
-    status.classList.remove("hidden");
-    msgInput.value = "";
+    try {
+        const response = await fetch("https://api.web3forms.com/submit", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+            },
+            body: JSON.stringify({
+                access_key: "1545353f-657c-49b8-8de7-d3224c4c4d40", // 👈 PASTE YOUR KEY HERE
+                subject: `New Feedback from ${rollNo}`,
+                from_name: "Backbenchers Results Portal",
+                message: msg,
+                hall_ticket: rollNo
+            }),
+        });
 
-    btn.innerText = "SENT ✓";
+        const result = await response.json();
 
-    // reset after 3 sec
-    setTimeout(() => {
-      btn.innerText = "SEND";
-      btn.disabled = false;
-      btn.classList.remove("opacity-60", "cursor-not-allowed");
-      status.classList.add("hidden");
-    }, 3000);
-  })
-  .catch(err => {
-    console.error(err);
-    btn.innerText = "FAILED";
-    btn.disabled = false;
-  });
+        if (result.success) {
+            // SUCCESS UI
+            status.classList.remove("hidden");
+            status.innerText = "✅ Feedback Sent";
+            msgInput.value = "";
+            btn.innerText = "SENT ✓";
+        } else {
+            throw new Error("Failed to send");
+        }
+    } catch (err) {
+        console.error(err);
+        btn.innerText = "FAILED";
+        status.classList.remove("hidden");
+        status.innerText = "❌ Error Sending";
+        status.classList.replace("text-green-500", "text-red-500");
+    } finally {
+        // Reset button after 3 seconds
+        setTimeout(() => {
+            btn.innerText = "SEND";
+            btn.disabled = false;
+            btn.classList.remove("opacity-60", "cursor-not-allowed");
+            status.classList.add("hidden");
+            // Reset colors for next attempt
+            status.classList.replace("text-red-500", "text-green-500");
+        }, 3000);
+    }
 }
 
 
@@ -551,3 +617,467 @@ function handlePrint() {
         document.title = originalTitle;
     }, 100);
 }
+
+  // Global function to close the notification
+  window.closeAppNotification = function() {
+    const banner = document.getElementById('app-download-notification');
+    if (banner) {
+      banner.style.display = 'none';
+      // Save user preference so it doesn't show again
+      localStorage.setItem('app_result_banner_v1', 'hidden');
+    }
+  };
+
+  // Global function to show the notification
+  window.initAppNotification = function() {
+    const banner = document.getElementById('app-download-notification');
+    const status = localStorage.getItem('app_result_banner_v1');
+
+    // Show only if user hasn't hidden it before
+    if (banner && status !== 'hidden') {
+      banner.style.display = 'block';
+      console.log("App notification initialized");
+    }
+  };
+
+  // Run the notification after 3 seconds so user can see their results first
+  window.addEventListener('load', () => {
+    setTimeout(window.initAppNotification, 3000);
+  });
+document.querySelectorAll('nav a').forEach(link => {
+    link.addEventListener('click', function(e) {
+        // If it's an internal link (Home or Backlog)
+        if (this.getAttribute('href').endsWith('.html')) {
+            const loader = document.getElementById('loadingProgress');
+            if (loader) {
+                loader.style.width = '100%'; // Trigger the yellow bar at the top
+            }
+        }
+    });
+});
+
+
+// Function to focus the search box when clicking the "Results" card
+function scrollToSearch() {
+    const searchSection = document.getElementById("searchAnchor");
+    searchSection.scrollIntoView({ behavior: 'smooth' });
+    document.getElementById("hallTicketInput").focus();
+}
+
+// Placeholder for Credit Checker logic
+function openCreditChecker() {
+    if (!FULL_RESULT) {
+        alert("Please search for a Hall Ticket first to calculate credits.");
+        scrollToSearch();
+        return;
+    }
+    
+    let earnedCredits = 0;
+    FULL_RESULT.semesters.forEach(sem => {
+        sem.subjects.forEach(sub => {
+            // Only add credits if grade is not F, S, or Absent
+            if (!["F", "S", "ABSENT", "Ab"].includes(sub.grade)) {
+                earnedCredits += parseFloat(sub.credits || 0);
+            }
+        });
+    });
+    
+    alert(`Total Credits Earned: ${earnedCredits}`);
+}
+
+// Placeholder for Comparison Tool
+function openComparison() {
+    alert("Comparison tool: Enter a second Hall Ticket in the next update!");
+}
+
+function renderCreditChecker() {
+    if (!FULL_RESULT) return;
+
+    // Update Header Info
+    document.getElementById("studentName").innerText = FULL_RESULT.name || "---";
+    document.getElementById("rollNumber").innerText = FULL_RESULT.hallTicket || "---";
+    document.getElementById("collegeCode").innerText = FULL_RESULT.collegeCode || "---";
+    document.getElementById("fatherName").innerText = FULL_RESULT.fatherName || "---";
+    document.getElementById("collegeName").innerText = FULL_RESULT.college || "---";
+    document.getElementById("branchName").innerText = FULL_RESULT.branch || "---";
+
+    const container = document.getElementById("creditResults");
+    container.innerHTML = ""; // Clear placeholders
+
+    // Logic to group semesters into Years (1-1 & 1-2 = 1 Year, etc.)
+    const years = { "1 Year": ["1-1", "1-2"], "2 Year": ["2-1", "2-2"], "3 Year": ["3-1", "3-2"], "4 Year": ["4-1", "4-2"] };
+
+    Object.entries(years).forEach(([yearName, sems]) => {
+        let yearHtml = `<div class="mb-6 border border-zinc-700">
+            <div class="bg-zinc-900 text-blue-400 py-2 text-center font-black border-b border-zinc-700">${yearName}</div>
+            <table class="w-full text-center text-[11px] tracking-widest">
+                <tr class="bg-zinc-900/50 text-zinc-500 font-bold">
+                    <td class="border border-zinc-700 p-2">SEMESTER</td>
+                    <td class="border border-zinc-700 p-2">CREDITS</td>
+                </tr>`;
+
+        let totalYearCredits = 0;
+        let earnedYearCredits = 0;
+
+        sems.forEach(semName => {
+            const semData = FULL_RESULT.semesters.find(s => s.semester === semName);
+            if (semData) {
+                let semCredits = 0;
+                semData.subjects.forEach(sub => {
+                    const cr = parseFloat(sub.credits || 0);
+                    totalYearCredits += cr;
+                    if (!["F", "S", "Ab", "ABSENT"].includes(sub.grade)) {
+                        semCredits += cr;
+                        earnedYearCredits += cr;
+                    }
+                });
+                yearHtml += `<tr class="text-white">
+                    <td class="border border-zinc-700 p-2">${semName}</td>
+                    <td class="border border-zinc-700 p-2 font-bold">${semCredits}</td>
+                </tr>`;
+            }
+        });
+
+        yearHtml += `<tr class="bg-zinc-900 text-white font-black">
+                <td class="border border-zinc-700 p-2">Credits Received</td>
+                <td class="border border-zinc-700 p-2 text-yellow-accent">${earnedYearCredits}/${totalYearCredits}</td>
+            </tr></table></div>`;
+        
+        if (totalYearCredits > 0) container.innerHTML += yearHtml;
+    });
+}
+
+
+//credits
+/* ================= CREDIT CHECKER CORE LOGIC ================= */
+
+/* ================= CREDIT CHECKER CORE LOGIC ================= */
+
+async function searchCredits() {
+    const htno = document.getElementById("creditHTInput").value.trim().toUpperCase();
+    const container = document.getElementById("creditTableContainer");
+    const errorMsg = document.getElementById("creditError");
+    const loading = document.getElementById("creditLoading"); // Point to the new loader
+    const statusText = document.getElementById("loadingStatusText");
+
+    if (!htno) {
+        errorMsg.innerText = "Please enter a Hall Ticket Number";
+        errorMsg.classList.remove("hidden");
+        return;
+    }
+
+    // Reset UI and show Loading
+    errorMsg.classList.add("hidden");
+    container.classList.add("hidden");
+    loading.classList.remove("hidden");
+    
+    // Step 1: Status Update
+    statusText.innerText = "Connecting to Server...";
+
+    try {
+        // Step 2: Status Update
+        setTimeout(() => { statusText.innerText = "Decrypting Records..."; }, 800);
+
+        const res = await fetch(`https://jntuh-backend-7rad.onrender.com/result/${htno}`);
+        const json = await res.json();
+        
+        if (!json || !json.data) throw new Error("Data not found");
+
+        // Step 3: Status Update
+        statusText.innerText = "Calculating Credits...";
+
+        const data = typeof json.data === 'string' ? JSON.parse(json.data.replace(/'/g, '"')) : json.data;
+
+        // Populate Headers
+        document.getElementById("c_Name").innerText = data.name;
+        document.getElementById("c_Roll").innerText = data.hallTicket;
+        document.getElementById("c_CollCode").innerText = data.collegeCode;
+        document.getElementById("c_Father").innerText = data.fatherName;
+        document.getElementById("c_CollName").innerText = data.college;
+        document.getElementById("c_Branch").innerText = data.branch;
+
+        renderYearBlocks(data.semesters);
+
+        // Success State
+        loading.classList.add("hidden");
+        container.classList.remove("hidden");
+        
+        if (typeof createBurst === "function") createBurst();
+
+    } catch (err) {
+        loading.classList.add("hidden");
+        errorMsg.innerText = err.message;
+        errorMsg.classList.remove("hidden");
+    }
+}
+function renderYearBlocks(semesters) {
+    const container = document.getElementById("yearBlocks");
+    container.innerHTML = "";
+    let gEarned = 0, gPossible = 0;
+
+    // Latest Pass Logic: Track unique subjects passed across all attempts
+    const passedMap = new Map();
+    semesters.forEach(sem => {
+        sem.subjects.forEach(sub => {
+            const code = sub.subjectCode || sub.code;
+            if (!["F", "S", "ABSENT", "Ab"].includes(sub.grade)) {
+                passedMap.set(code, parseFloat(sub.credits || 0));
+            }
+        });
+    });
+
+    const years = { "1 Year": ["1-1", "1-2"], "2 Year": ["2-1", "2-2"], "3 Year": ["3-1", "3-2"], "4 Year": ["4-1", "4-2"] };
+
+    Object.entries(years).forEach(([year, sems], idx) => {
+        let yEarned = 0, yPossible = 0, rows = "";
+
+        sems.forEach(sName => {
+            const semData = semesters.find(s => s.semester === sName);
+            if (semData) {
+                let sEarned = 0;
+                const sPossible = 20; // Fixed 20 credits per sem
+
+                const uniqueCodes = [...new Set(semData.subjects.map(s => s.subjectCode || s.code))];
+                uniqueCodes.forEach(code => {
+                    if (passedMap.has(code)) sEarned += passedMap.get(code);
+                });
+
+                const earned = Math.min(sEarned, sPossible);
+                yEarned += earned;
+                yPossible += sPossible;
+
+                rows += `<tr class="text-white border-b border-zinc-800 font-bold">
+                    <td class="border border-zinc-800 p-3">${sName}</td>
+                    <td class="border border-zinc-800 p-3">${earned} / ${sPossible}</td>
+                </tr>`;
+            }
+        });
+
+        if (yPossible > 0) {
+            gEarned += yEarned; gPossible += yPossible;
+            const div = document.createElement("div");
+            div.className = "border-2 border-zinc-800 mb-6 opacity-0 animate-fade-in";
+            div.style.animationDelay = `${idx * 0.15}s`;
+            div.innerHTML = `
+                <div class="bg-zinc-900 text-blue-400 py-2.5 text-center font-black uppercase border-b-2 border-zinc-800">${year}</div>
+                <table class="w-full text-center text-[11px] tracking-widest">
+                    <tr class="bg-zinc-900/60 text-blue-300 font-black"><td class="border border-zinc-800 p-2">SEMESTER</td><td class="border border-zinc-800 p-2">EARNED / TOTAL</td></tr>
+                    ${rows}
+                    <tr class="bg-zinc-900 text-white font-black"><td class="border border-zinc-800 p-3">Credits Received</td><td class="border border-zinc-800 p-3 text-yellow-accent">${yEarned}/${yPossible}</td></tr>
+                </table>`;
+            container.appendChild(div);
+        }
+    });
+
+    // Update Grand Totals
+    document.getElementById("grandTotalEarned").innerText = gEarned;
+    document.getElementById("grandTotalPossible").innerText = gPossible;
+    document.getElementById("grandTotalContainer").classList.remove("hidden");
+}
+
+/* ================= CREDIT CHECKER LOGIC ================= */
+
+/**
+ * Fetches result data from the backend and renders the credit summary table.
+ * Specifically handles the grouping of semesters into academic years.
+ */
+async function fetchCredits() {
+    const ht = document.getElementById("htInput").value.trim().toUpperCase();
+    const resArea = document.getElementById("resultArea");
+    const error = document.getElementById("errorMsg");
+    
+    // Validate input
+    if (!ht) {
+        error.innerText = "Please enter a Hall Ticket Number";
+        error.classList.remove("hidden");
+        return;
+    }
+    
+    try {
+        // Fetch data from the JNTUH Backend
+        const response = await fetch(`https://jntuh-backend-7rad.onrender.com/result/${ht}`);
+        const json = await response.json();
+        
+        if (!json || !json.data) throw new Error("Data not found for this Roll Number");
+        
+        // Normalize the data format
+        const data = typeof json.data === 'string' ? JSON.parse(json.data.replace(/'/g, '"')) : json.data;
+
+        // 1. Fill Student Information Header
+        document.getElementById("resName").innerText = data.name || "---";
+        document.getElementById("resRoll").innerText = data.hallTicket || "---";
+        document.getElementById("resColCode").innerText = data.collegeCode || "---";
+        document.getElementById("resFather").innerText = data.fatherName || "---";
+        document.getElementById("resColName").innerText = data.college || "---";
+        document.getElementById("resBranch").innerText = data.branch || "---";
+
+        // 2. Process and Render Yearly Credit Blocks
+        renderYearBlocks(data.semesters);
+        
+        // Show the results and hide errors
+        resArea.classList.remove("hidden");
+        error.classList.add("hidden");
+        
+    } catch (err) {
+        console.error("fetchCredits error:", err);
+        error.innerText = err.message;
+        error.classList.remove("hidden");
+        resArea.classList.add("hidden");
+    }
+}
+
+
+/**
+ * Handles professional printing of the credit report.
+ * Renames document title to Roll Number for PDF naming.
+ */
+/**
+ * Professional Print Handler for Credit Checker
+ * Automatically sets the filename to the student's Hall Ticket number
+ */
+function handleCreditPrint() {
+    const originalTitle = document.title;
+    const rollNo = document.getElementById("c_Roll")?.innerText.trim();
+
+    // Set document title to HTNO for clean PDF naming (e.g., 23S45A6608.pdf)
+    if (rollNo && rollNo !== "---") {
+        document.title = `Credit_Report_${rollNo}`;
+    }
+
+    // Trigger the print dialog
+    window.print();
+
+    // Restore original title after the dialog closes
+    setTimeout(() => {
+        document.title = originalTitle;
+    }, 100);
+}
+
+
+/* ================= ENTER KEY LISTENER ================= */
+// Target the Credit Checker input field
+document.getElementById("creditHTInput")?.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+        searchCredits(); // Calls your credit fetch function
+    }
+});
+
+
+
+
+/* ================= COMPARISON LOGIC ================= */
+
+async function compareResults() {
+    const ht1 = document.getElementById("ht1").value.trim().toUpperCase();
+    const ht2 = document.getElementById("ht2").value.trim().toUpperCase();
+    const area = document.getElementById("compareArea");
+    const loader = document.getElementById("compareLoading");
+    const statusText = document.getElementById("compareStatusText");
+    
+    if (!ht1 || !ht2) return alert("Please enter both Hall Ticket numbers");
+
+    area.classList.add("hidden");
+    loader.classList.remove("hidden");
+    statusText.innerText = "Connecting to JNTUH Server...";
+    
+    try {
+        const [res1, res2] = await Promise.all([
+            fetch(`https://jntuh-backend-7rad.onrender.com/result/${ht1}`).then(r => r.json()),
+            fetch(`https://jntuh-backend-7rad.onrender.com/result/${ht2}`).then(r => r.json())
+        ]);
+
+        if (!res1.data || !res2.data) throw new Error("Roll Number(s) not found");
+
+        const d1 = typeof res1.data === 'string' ? JSON.parse(res1.data.replace(/'/g, '"')) : res1.data;
+        const d2 = typeof res2.data === 'string' ? JSON.parse(res2.data.replace(/'/g, '"')) : res2.data;
+
+        renderCompareColumn("column1", d1);
+        renderCompareColumn("column2", d2);
+
+        loader.classList.add("hidden");
+        area.classList.remove("hidden");
+        if (typeof createBurst === "function") createBurst();
+
+    } catch (err) {
+        loader.classList.add("hidden");
+        alert(err.message);
+    }
+}
+
+function renderCompareColumn(columnId, data) {
+    const col = document.getElementById(columnId);
+    
+    // Calculate Overall Stats
+    const cgpa = calculateCGPA(data.semesters);
+    const totalCredits = data.semesters.reduce((acc, sem) => 
+        acc + sem.subjects.reduce((a, s) => !["F","S","Ab"].includes(s.grade) ? a + parseFloat(s.credits || 0) : a, 0), 0);
+
+    // 1. Student Info Card
+    col.innerHTML = `
+        <div class="bg-zinc-900 border-2 border-zinc-800 p-6 rounded-2xl shadow-2xl relative overflow-hidden group hover:border-yellow-accent/50 transition-all">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-yellow-accent/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
+            <h2 class="text-yellow-accent font-black uppercase text-sm tracking-widest mb-1">${data.name}</h2>
+            <p class="text-zinc-500 text-[10px] font-bold tracking-tighter mb-4">${data.hallTicket}</p>
+            
+            <div class="grid grid-cols-2 gap-4 pt-4 border-t border-zinc-800/50">
+                <div>
+                    <p class="text-[8px] text-zinc-600 uppercase font-black tracking-widest mb-1">Final CGPA</p>
+                    <p class="text-2xl font-black text-white">${cgpa}</p>
+                </div>
+                <div>
+                    <p class="text-[8px] text-zinc-600 uppercase font-black tracking-widest mb-1">Total Credits</p>
+                    <p class="text-2xl font-black text-blue-400">${totalCredits}</p>
+                </div>
+            </div>
+        </div>
+        <div id="${columnId}_sems" class="space-y-4 mt-6"></div>
+    `;
+
+    const semBox = document.getElementById(`${columnId}_sems`);
+    const semNames = ["1-1", "1-2", "2-1", "2-2", "3-1", "3-2", "4-1", "4-2"];
+
+    // 2. Individual Semester Summary Cards
+    semNames.forEach(sName => {
+        const semData = data.semesters.find(s => s.semester === sName);
+        if (semData) {
+            const sgpa = calculateSGPA(semData.subjects);
+            const credits = semData.subjects.reduce((a, s) => !["F","S","Ab"].includes(s.grade) ? a + parseFloat(s.credits || 0) : a, 0);
+            
+            semBox.innerHTML += `
+                <div class="bg-zinc-900/30 border border-zinc-800 p-4 rounded-xl flex items-center justify-between hover:bg-zinc-800/40 transition-all">
+                    <div>
+                        <p class="text-zinc-600 font-black text-[9px] uppercase tracking-widest mb-1">Semester ${sName}</p>
+                        <div class="flex items-center gap-3">
+                            <span class="text-white font-black text-sm">${sgpa} <span class="text-zinc-700 text-[10px]">SGPA</span></span>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-yellow-accent font-black text-sm">${credits} <span class="text-zinc-700 text-[10px]">CR</span></p>
+                    </div>
+                </div>
+            `;
+        }
+    });
+}
+
+function handleComparePrint() {
+    const originalTitle = document.title;
+    const h1 = document.getElementById("ht1").value.trim().toUpperCase();
+    const h2 = document.getElementById("ht2").value.trim().toUpperCase();
+    
+    if (h1 && h2) document.title = `Comparison_${h1}_vs_${h2}`;
+    
+    window.print();
+    
+    setTimeout(() => { document.title = originalTitle; }, 100);
+}
+
+/* ================= ENTER KEY FOR COMPARE ================= */
+// Add listener to both input fields for Student 1 and Student 2
+["ht1", "ht2"].forEach(id => {
+    document.getElementById(id)?.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+            compareResults(); // Calls your comparison fetch function
+        }
+    });
+});
