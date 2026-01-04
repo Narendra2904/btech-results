@@ -2,3 +2,8 @@
   "cleanUrls": true,
   "trailingSlash": false
 }
+{
+  "scripts": {
+    "start": "node server.js"
+  }
+}
