@@ -3,6 +3,43 @@
         :root {
             --accent: #FFD700;
         }
+        /* Page Transition: Slide Up and Fade In */
+@keyframes pageSlideIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(30px); 
+        filter: blur(10px);
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0);
+        filter: blur(0);
+    }
+}
+
+/* Apply to the body so the entire layout slides together */
+body {
+    animation: pageSlideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Smooth Navigation Underline effect for Desktop Menu */
+.nav-link {
+    position: relative;
+    padding-bottom: 4px;
+}
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--accent);
+    transition: width 0.3s ease;
+}
+.nav-link:hover::after {
+    width: 100%;
+}
 
         body {
             font-family: 'Inter', sans-serif;
@@ -143,4 +180,85 @@
   color: #000;
   border-color: #FFD700;
   transform: translateY(-4px);
+}
+
+.nav-link {
+    white-space: nowrap; /* Prevents links from breaking into two lines */
+    display: inline-block;
+}
+
+/* Optional: Hide less important items on smaller tablets to keep alignment clean */
+@media (max-width: 1024px) {
+    .md\:flex.items-center.space-x-4 a:nth-last-child(-n+2) {
+        display: none;
+    }
+}
+
+/* Credit Table Specific Styles */
+.credit-table td {
+    border: 1px solid #27272a; /* matches zinc-800 */
+}
+
+/* Ensure text is strictly uppercase as per JNTUH style */
+#studentName, #collegeName, #branchName {
+    text-transform: uppercase;
+}
+
+/* Print optimization for the Credit Table */
+@media print {
+    .bg-zinc-900 { background-color: #f3f4f6 !important; color: #000 !important; }
+    .text-blue-400, .text-blue-300 { color: #000 !important; font-weight: bold !important; }
+    .border-zinc-700 { border-color: #000 !important; }
+}
+
+
+
+
+/* Staggered Slide Up Animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Pulse effect for the search button when active */
+.btn-pulse:active {
+    transform: scale(0.95);
+    box-shadow: 0 0 15px var(--accent);
+}
+
+/* Shimmer effect for the loading state */
+.shimmer {
+    background: linear-gradient(90deg, #111 25%, #222 50%, #111 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.animate-reveal {
+    animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
