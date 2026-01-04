@@ -6,175 +6,9 @@
     <title>JNTUH RESULTS | BACK.BENCHERS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="icon" type="image/png" href="./assets/fav.png">
-
+    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
-        
-        :root {
-            --accent: #FFD700;
-        }
-        /* Page Transition: Slide Up and Fade In */
-@keyframes pageSlideIn {
-    from { 
-        opacity: 0; 
-        transform: translateY(30px); 
-        filter: blur(10px);
-    }
-    to { 
-        opacity: 1; 
-        transform: translateY(0);
-        filter: blur(0);
-    }
-}
-
-/* Apply to the body so the entire layout slides together */
-body {
-    animation: pageSlideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* Smooth Navigation Underline effect for Desktop Menu */
-.nav-link {
-    position: relative;
-    padding-bottom: 4px;
-}
-.nav-link::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background-color: var(--accent);
-    transition: width 0.3s ease;
-}
-.nav-link:hover::after {
-    width: 100%;
-}
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #080808;
-            color: #ffffff;
-            -webkit-font-smoothing: antialiased;
-            overflow-x: hidden;
-        }
-
-        /* Spotlight Effect */
-        #spotlight {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            pointer-events: none;
-            background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(255, 215, 0, 0.05) 0%, rgba(0,0,0,0) 50%);
-            z-index: 999;
-        }
-
-        .yellow-accent { color: var(--accent); }
-        .bg-yellow-accent { background-color: var(--accent); }
-        
-        .heading-tight { letter-spacing: -0.025em; line-height: 1.2; }
-        .text-micro { font-size: 0.65rem; letter-spacing: 0.08em; }
-
-        /* Card Interaction */
-        .interactive-card {
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-        .interactive-card:hover {
-            transform: translateY(-4px) scale(1.01);
-            border-color: rgba(255, 215, 0, 0.3);
-            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
-        }
-
-        .input-focus:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
-        }
-
-        /* Animations */
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-reveal { animation: slideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-
-        .loader-bar {
-            width: 0%;
-            height: 2px;
-            background: var(--accent);
-            transition: width 1s ease-in-out;
-        }
-
-        /* Emoji Burst Container */
-        #burst-container {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: 1000;
-        }
-
-        .particle {
-            position: absolute;
-            font-size: 24px;
-            animation: particleAnim 1s ease-out forwards;
-        }
-
-        @keyframes particleAnim {
-            0% { transform: translate(0, 0) scale(1); opacity: 1; }
-            100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
-        }
-
-        /* Styling for Info Table to match Results Table */
-.info-table td {
-    background: rgba(24, 24, 27, 0.4);
-}
-
-@media print {
-    /* Force B&W Print */
-    html, body {
-        background: #fff !important;
-        color: #000 !important;
-    }
-
-    .no-print {
-        display: none !important;
-    }
-    /* Hide non-essential UI */
-    nav, footer, .search-section, .search-container-box, 
-    #spotlight, #burst-container, .no-print, #semesterSelect {
-        display: none !important;
-    }
-
-    /* Professional Boxed Styling for both Info and Result Tables */
-    .info-table, .boxed-table, table {
-        width: 100% !important;
-        border: 2px solid #000 !important;
-        border-collapse: collapse !important;
-        margin-bottom: 15px !important;
-    }
-
-    td, th {
-        border: 1px solid #000 !important;
-        padding: 5px 8px !important;
-        color: #000 !important;
-    }
-
-    /* Label and value formatting inside the table cells */
-    .text-micro {
-        font-size: 8px !important;
-        border-bottom: 0.5px solid #000 !important;
-        margin-bottom: 2px !important;
-        display: block !important;
-    }
-    
-    .font-bold {
-        font-size: 11px !important;
-    }
-}
-
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body class="min-h-screen flex flex-col">
 
@@ -182,230 +16,99 @@ body {
     <div id="burst-container"></div>
 
     <!-- Header / Navbar -->
-    <!-- Header / Navbar -->
 <nav class="border-b border-zinc-800/60 bg-black/80 backdrop-blur-xl sticky top-0 z-50">
-  <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+    <div class="max-w-full lg:max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+        
+        <div class="flex items-center space-x-3 group cursor-pointer shrink-0" onclick="window.location.href='index.html'">
+            <img src="./assets/fav.png" alt="Backbenchers Logo" class="w-8 h-8 rounded-md transition-transform duration-300 group-hover:scale-110 shadow-md" />
+            <div class="bg-yellow-accent text-black font-black px-2 py-0.5 text-sm rounded-sm transition-transform duration-300 group-hover:-rotate-2">
+                BACK
+            </div>
+            <span class="font-extrabold text-lg tracking-tighter transition-colors duration-300 group-hover:text-yellow-accent">
+                BENCHERS
+            </span>
+        </div>
 
-    <!-- Brand -->
-    <div 
-  class="flex items-center space-x-3 group cursor-pointer"
-  onclick="location.reload()"
->
+        <div class="hidden md:flex flex-1 justify-center">
+            <div class="flex items-center space-x-4 lg:space-x-6 font-bold text-[10px] uppercase tracking-widest text-zinc-500">
+                <a href="index.html" class="nav-link hover:text-yellow-accent border-b-2 border-yellow-accent pb-1">Home</a>
+                <a href="result.html" class="nav-link hover:text-yellow-accent">All Results</a>
+                <a href="backlog.html" class="nav-link hover:text-yellow-accent">Backlog Report</a>
+                <a href="creditChecker.html" class="nav-link hover:text-yellow-accent">Credit Checker</a>
+                <a href="compare.html" class="nav-link hover:text-yellow-accent">Compare</a>
+                <a href="https://btech-notes.vercel.app" class="nav-link hover:text-yellow-accent">Notes</a>
+            </div>
+        </div>
 
-  <!-- LOGO IMAGE -->
-  <img
-    src="./assets/fav.png"
-    alt="Backbenchers Logo"
-    class="
-      w-8 h-8 
-      rounded-md 
-      transition-transform duration-300 
-      group-hover:scale-110 
-      group-hover:rotate-3
-      shadow-md
-    "
-  />
+        <div class="flex items-center md:hidden">
+            <button onclick="toggleMobileMenu()" class="text-yellow-accent text-2xl p-2 focus:outline-none hover:bg-zinc-900 rounded-lg transition-colors">
+                <i id="menuIcon" class="fas fa-bars"></i>
+            </button>
+        </div>
 
-  <!-- EXISTING BACK BADGE -->
-  <div
-    class="
-      bg-yellow-accent 
-      text-black 
-      font-black 
-      px-2 
-      py-0.5 
-      text-sm 
-      rounded-sm 
-      transition-transform duration-300
-      group-hover:-rotate-2
-    "
-  >
-    BACK
-  </div>
-
-  <!-- BENCHERS TEXT -->
-  <span
-    class="
-      font-extrabold 
-      text-lg 
-      tracking-tighter
-      transition-colors duration-300
-      group-hover:text-yellow-accent
-    "
-  >
-    BENCHERS
-  </span>
-</div>
-
-    <!-- Desktop Menu -->
-    <div class="hidden md:flex items-center space-x-8 font-semibold text-[11px] uppercase tracking-widest text-zinc-500">
-    <a href="https://btech-notes.vercel.app" class="nav-link hover:text-yellow-accent">Notes</a>
-    <a href="#" class="text-yellow-accent border-b-2 border-yellow-accent pb-1">Home</a>
-    <a href="backlog.html" class="nav-link hover:text-yellow-accent">Active Backlog Report</a>
-    <a href="https://btech-notes.vercel.app/movie.html" class="nav-link hover:text-yellow-accent">Movies</a>
-</div>
-
-    <!-- Right Side -->
-    <div class="flex items-center gap-4">
-
-      <!-- Print -->
-      
-
-      <!-- Status -->
-      <div class="hidden md:flex items-center gap-2 text-micro font-bold text-zinc-500
-                  bg-zinc-900/50 px-3 py-1.5 rounded-full border border-zinc-800/50">
-        <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
-        SERVER: ACTIVE
-      </div>
-
-      <!-- ☰ Mobile Hamburger -->
-      <button onclick="toggleMobileMenu()"
-        class="md:hidden text-yellow-accent text-2xl focus:outline-none">
-        <i class="fas fa-bars"></i>
-      </button>
+        <div class="hidden lg:flex items-center gap-2 text-micro font-bold text-zinc-500 bg-zinc-900/50 px-3 py-1.5 rounded-full border border-zinc-800/50">
+            <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+            SERVER: ACTIVE
+        </div>
     </div>
-  </div>
 
-  <!-- Mobile Menu -->
-  <div id="mobileMenu"
-    class="md:hidden hidden bg-black border-t border-zinc-800 px-6 py-6 space-y-4
-           text-sm font-extrabold uppercase tracking-widest text-zinc-400">
-    <a href="https://btech-notes.vercel.app" class="block hover:text-yellow-accent">Notes</a>
-    <a href="#" class="block text-yellow-accent">Home</a>
-      <a href="backlog.html" class="block hover:text-yellow-accent">Active Backlog Report</a>
-    <a href="https://btech-notes.vercel.app/movie.html" class="block hover:text-yellow-accent">Movies</a>
-
-    <div class="pt-4 border-t border-zinc-800 flex items-center gap-3 text-[10px]">
-      <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-      SERVER ACTIVE
+    <div id="mobileMenu" class="md:hidden hidden bg-black border-t border-zinc-800 absolute top-16 left-0 w-full z-50 px-6 py-8 space-y-6 shadow-2xl animate-reveal">
+        <a href="index.html" class="block text-yellow-accent font-black text-xs uppercase tracking-[0.2em] py-2 border-b border-zinc-900"><i class="fas fa-home mr-3"></i> Home</a>
+        <a href="result.html" class="block text-zinc-400 font-black text-xs uppercase tracking-[0.2em] py-2 border-b border-zinc-900"><i class="fas fa-search mr-3"></i> All Results</a>
+        <a href="backlog.html" class="block text-zinc-400 font-black text-xs uppercase tracking-[0.2em] py-2 border-b border-zinc-900"><i class="fas fa-exclamation-triangle mr-3"></i> Backlog Report</a>
+        <a href="creditChecker.html" class="block text-zinc-400 font-black text-xs uppercase tracking-[0.2em] py-2 border-b border-zinc-900"><i class="fas fa-award mr-3"></i> Credit Checker</a>
+        <a href="https://btech-notes.vercel.app" class="block text-zinc-400 font-black text-xs uppercase tracking-[0.2em] py-2"><i class="fas fa-notes-medical mr-3"></i> Notes</a>
     </div>
-  </div>
 </nav>
 
 
     <!-- Main Content -->
     <main class="flex-grow max-w-5xl mx-auto w-full px-6 py-12">
-        
-        <!-- Search Section -->
-        <div class="text-center mb-10 search-section">
-            <p id="timeGreeting" class="text-yellow-accent text-[10px] font-black uppercase tracking-[0.3em] mb-2 opacity-0 transition-opacity duration-1000">Good Day Bro</p>
-            <h1 class="text-3xl md:text-4xl font-black heading-tight mb-3">JNTUH B.Tech<span class="yellow-accent"> RESULTS</span></h1>
-            <p class="text-zinc-500 text-sm max-w-md mx-auto leading-relaxed">Enter your HallTicket to get your academic results from the Server.</p>
-        </div>
-
-        <div class="bg-zinc-900/30 p-5 rounded-2xl border border-zinc-800/50 shadow-2xl mb-10 group relative overflow-hidden search-container-box">
-            <div id="loadingProgress" class="absolute top-0 left-0 loader-bar"></div>
-            <div class="flex flex-col sm:flex-row gap-3 relative z-10">
-                <div class="relative flex-grow">
-                    <input 
-                        type="text" 
-                        id="hallTicketInput"
-                        placeholder="HALL TICKET NUMBER" 
-                        class="w-full bg-black/60 border border-zinc-700/50 rounded-xl px-5 py-3.5 text-sm font-bold uppercase tracking-widest input-focus transition-all placeholder:text-zinc-800 text-yellow-accent"
-                    >
-                </div>
-                <button 
-                    onclick="searchResult()"
-                    id="searchBtn"
-                    class="bg-yellow-accent hover:bg-yellow-400 active:scale-95 text-black font-extrabold px-10 py-3.5 rounded-xl transition-all flex items-center justify-center space-x-2 text-xs uppercase tracking-widest group shadow-[0_0_20px_rgba(255,215,0,0.15)]"
-                >
-                    <span>Fetch Data</span>
-                    <i class="fas fa-bolt text-[10px] group-hover:animate-bounce"></i>
-                </button>
-            </div>
-            <p id="errorMsg" class="text-red-400 mt-4 text-[11px] font-bold hidden flex items-center justify-center bg-red-400/5 py-2 rounded-lg border border-red-400/10">
-                <i class="fas fa-shield-alt mr-2"></i> <span id="errorText"></span>
-            </p>
-        </div>
-
-        <!-- Loading State -->
-        <div id="loadingState" class="hidden flex flex-col items-center justify-center py-16">
-            <div class="relative">
-                <div class="w-12 h-12 border-2 border-zinc-800 rounded-full"></div>
-                <div class="w-12 h-12 border-t-2 border-yellow-accent rounded-full animate-spin absolute top-0 left-0"></div>
-            </div>
-            <p class="text-zinc-600 font-bold uppercase tracking-[0.4em] text-[10px] mt-6">Decrypting Database...</p>
-        </div>
-
-        <div id="resultContainer" class="hidden space-y-4 md:space-y-6">
     
-    <div class="info-table-container">
-        <table class="w-full border-collapse border-2 border-zinc-800 info-table">
-            <tbody class="block">
-                <tr class="grid grid-cols-3 border-b border-zinc-800">
-                    <td class="p-0 border-r border-zinc-800">
-                        <div class="px-2 md:px-4 py-2">
-                            <p class="text-[7px] md:text-micro font-black text-zinc-500 uppercase">Name</p>
-                            <p id="resName" class="font-bold text-[9px] md:text-[13px] truncate">---</p>
-                        </div>
-                    </td>
-                    <td class="p-0 border-r border-zinc-800">
-                        <div class="px-2 md:px-4 py-2">
-                            <p class="text-[7px] md:text-micro font-black text-zinc-500 uppercase">Roll Number</p>
-                            <p id="resRoll" class="font-bold text-[9px] md:text-[13px] yellow-accent">---</p>
-                        </div>
-                    </td>
-                    <td class="p-0">
-                        <div class="px-2 md:px-4 py-2">
-                            <p class="text-[7px] md:text-micro font-black text-zinc-500 uppercase">Col Code</p>
-                            <p id="resCollegeCode" class="font-bold text-[9px] md:text-[13px]">---</p>
-                        </div>
-                    </td>
-                </tr>
-                <tr class="grid grid-cols-3">
-                    <td class="p-0 border-r border-zinc-800">
-                        <div class="px-2 md:px-4 py-2">
-                            <p class="text-[7px] md:text-micro font-black text-zinc-500 uppercase">Father Name</p>
-                            <p id="resFather" class="font-bold text-[9px] md:text-[13px] truncate">---</p>
-                        </div>
-                    </td>
-                    <td class="p-0 border-r border-zinc-800">
-                        <div class="px-2 md:px-4 py-2">
-                            <p class="text-[7px] md:text-micro font-black text-zinc-500 uppercase">College Name</p>
-                            <p id="resCollege" class="font-bold text-[8px] md:text-[13px] leading-tight truncate">---</p>
-                        </div>
-                    </td>
-                    <td class="p-0">
-                        <div class="px-2 md:px-4 py-2">
-                            <p class="text-[7px] md:text-micro font-black text-zinc-500 uppercase">Branch</p>
-                            <p id="resBranch" class="font-bold text-[9px] md:text-[13px] yellow-accent truncate">---</p>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+    <div class="text-center mb-10">
+        <p id="timeGreeting" class="text-yellow-accent text-[10px] font-black uppercase tracking-[0.3em] mb-2 opacity-0 transition-opacity duration-1000">Good Day Bro</p>
+        <h1 class="text-3xl md:text-4xl font-black heading-tight mb-3 uppercase">Results <span class="yellow-accent">Dashboard</span></h1>
+        <p class="text-zinc-500 text-sm max-w-md mx-auto leading-relaxed">Select a tool to interact with the JNTUH Server database.</p>
     </div>
 
-    <div class="flex flex-col-reverse md:flex-row justify-between items-stretch md:items-center gap-3 no-print px-1">
-        <button onclick="handlePrint()" class="bg-yellow-accent text-black font-black px-6 py-3.5 rounded-xl text-[10px] uppercase tracking-widest shadow-lg flex items-center justify-center transition-transform active:scale-95">
-            <i class="fas fa-print mr-2"></i> Print Result
-        </button>
-        <select id="semesterSelect" class="bg-black border-2 border-yellow-500 text-yellow-400 px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-widest focus:outline-none"></select>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+        
+        <a href="result.html" class="bg-zinc-900/30 border border-zinc-800/50 p-6 rounded-2xl flex flex-col items-center justify-center text-center hover:border-yellow-accent transition-all group active:scale-95">
+    <div class="w-12 h-12 bg-yellow-accent/10 rounded-full flex items-center justify-center mb-4 group-hover:bg-yellow-accent group-hover:text-black transition-colors">
+        <i class="fas fa-search"></i>
+    </div>
+    <h3 class="text-xs font-black uppercase tracking-widest mb-1">Results</h3>
+    <p class="text-[9px] text-zinc-500 uppercase font-bold">Search all Semesters</p>
+</a>
+
+        <a href="backlog.html" class="bg-zinc-900/30 border border-zinc-800/50 p-6 rounded-2xl flex flex-col items-center justify-center text-center hover:border-yellow-accent transition-all group active:scale-95">
+            <div class="w-12 h-12 bg-zinc-800/50 rounded-full flex items-center justify-center mb-4 group-hover:bg-red-500 group-hover:text-white transition-colors">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3 class="text-xs font-black uppercase tracking-widest mb-1">Backlog Report</h3>
+            <p class="text-[9px] text-zinc-500 uppercase font-bold">List Failed Subjects</p>
+        </a>
+
+        <a href="creditChecker.html" class="cursor-pointer bg-zinc-900/30 border border-zinc-800/50 p-6 rounded-2xl flex flex-col items-center justify-center text-center hover:border-yellow-accent transition-all group active:scale-95">
+            <div class="w-12 h-12 bg-zinc-800/50 rounded-full flex items-center justify-center mb-4 group-hover:bg-green-500 group-hover:text-white transition-colors">
+                <i class="fas fa-award"></i>
+            </div>
+            <h3 class="text-xs font-black uppercase tracking-widest mb-1">Credit Checker</h3>
+            <p class="text-[9px] text-zinc-500 uppercase font-bold">Calculate Earned Credits</p>
+          </a>
+
+        <a href="compare.html" class="cursor-pointer bg-zinc-900/30 border border-zinc-800/50 p-6 rounded-2xl flex flex-col items-center justify-center text-center hover:border-yellow-accent transition-all group active:scale-95">
+            <div class="w-12 h-12 bg-zinc-800/50 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-500 group-hover:text-white transition-colors">
+                <i class="fas fa-balance-scale"></i>
+            </div>
+            <h3 class="text-xs font-black uppercase tracking-widest mb-1">Comparison</h3>
+            <p class="text-[9px] text-zinc-500 uppercase font-bold">Compare with Friend</p>
+          </a>
     </div>
 
-    <div class="table-wrapper overflow-hidden rounded-xl border border-zinc-800 shadow-2xl">
-        <div class="overflow-x-auto">
-            <table class="boxed-table w-full min-w-[650px] md:min-w-full">
-                <thead>
-                    <tr class="bg-zinc-900/50 text-zinc-400 text-[9px] md:text-[10px] uppercase tracking-widest">
-                        <th class="px-3 md:px-4 py-3 border border-zinc-800">Sub Code</th>
-                        <th class="px-3 md:px-4 py-3 border border-zinc-800 text-left">Subject Name</th>
-                        <th class="px-2 md:px-4 py-3 border border-zinc-800 text-center">Int</th>
-                        <th class="px-2 md:px-4 py-3 border border-zinc-800 text-center">Ext</th>
-                        <th class="px-2 md:px-4 py-3 border border-zinc-800 text-center">Total</th>
-                        <th class="px-2 md:px-4 py-3 border border-zinc-800 text-center">Grade</th>
-                        <th class="px-2 md:px-4 py-3 border border-zinc-800 text-center">Cr</th>
-                    </tr>
-                </thead>
-                <tbody id="resultTableBody" class="text-[11px] md:text-[12px]"></tbody>
-            </table>
-        </div>
-    </div>
-</div>
+    
+</main>
 
-    </main>
-
-    <!-- Footer -->
     <!-- Footer -->
 <footer class="bg-black border-t border-zinc-900 pt-10 pb-5 px-6 relative">
 <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
@@ -517,8 +220,7 @@ body {
     <p>© 2025 Backbenchers</p>
   </div>
 
-  <!-- SOCIAL POPUP -->
-  <!-- SOCIAL POPUP -->
+
     <!-- SOCIAL POPUP -->
 <div id="socialPopup"
      class="fixed inset-0 bg-black/70 backdrop-blur-sm z-[9999]
@@ -552,7 +254,6 @@ body {
 
     <!-- USERS -->
     <div id="popupUsers" class="px-6 pb-8 space-y-4">
-      <!-- users injected by JS -->
     </div>
 
   </div>
@@ -560,650 +261,7 @@ body {
 
 
   </div>
-  
-</footer>
-<script>
-
-const SOCIAL_DATA = {
-  instagram: {
-    title: "INSTAGRAM",
-    color: "bg-pink-500",
-    icon: '<i class="fab fa-instagram text-white text-2xl"></i>',
-    users: [
-      { name: "Narendra Yenagandula", url: "https://instagram.com/narendra_yenagandula" },
-      { name: "Madhan Myana", url: "https://btech-notes.vercel.app/insta.html" }
-    ]
-  },
-  github: {
-    title: "GITHUB",
-    color: "bg-black",
-    icon: '<i class="fab fa-github text-white text-2xl"></i>',
-    users: [
-      { name: "Narendra Yenagandula", url: "https://github.com/Narendra2904" },
-      { name: "Madhan Myana", url: "https://github.com/madhanmyana" }
-    ]
-  },
-  linkedin: {
-    title: "LINKEDIN",
-    color: "bg-blue-600",
-    icon: '<i class="fab fa-linkedin-in text-white text-2xl"></i>',
-    users: [
-      { name: "Narendra Yenagandula", url: "https://www.linkedin.com/in/narendra-yenagandula/" },
-      { name: "Madhan Myana", url: "https://www.linkedin.com/in/madhan-myana-7ab90a335/" }
-    ]
-  }
-};
-
-function openPopup(type) {
-  const popup = document.getElementById("socialPopup");
-  const title = document.getElementById("popupTitle");
-  const iconBox = document.getElementById("popupIcon");
-  const usersBox = document.getElementById("popupUsers");
-
-  const data = SOCIAL_DATA[type];
-  if (!data) return;
-
-  title.innerText = data.title;
-  iconBox.className = `w-14 h-14 flex items-center justify-center mb-4 ${data.color}`;
-  iconBox.innerHTML = data.icon;
-
-  usersBox.innerHTML = "";
-  data.users.forEach(u => {
-    const a = document.createElement("a");
-    a.href = u.url;
-    a.target = "_blank";
-    a.className =
-      "flex justify-between items-center border border-black px-4 py-3 font-bold hover:bg-black hover:text-white transition";
-    a.innerHTML = `<span>${u.name}</span><span>→</span>`;
-    usersBox.appendChild(a);
-  });
-
-  popup.classList.remove("hidden");
-}
-
-function closePopup() {
-  document.getElementById("socialPopup").classList.add("hidden");
-}
-
-// click outside popup to close
-document.getElementById("socialPopup")
-  .addEventListener("click", e => {
-    if (e.target.id === "socialPopup") closePopup();
-  });
-</script>
-
-
-<style>
-.social-btn {
-  width: 44px;
-  height: 44px;
-  border: 1px solid #27272a;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #a1a1aa;
-  font-size: 16px;
-  transition: all 0.3s ease;
-}
-.social-btn:hover {
-  background: #FFD700;
-  color: #000;
-  border-color: #FFD700;
-  transform: translateY(-4px);
-}
-</style>
-
-
-
-    
-    <script>
-function toggleMobileMenu() {
-  const menu = document.getElementById("mobileMenu");
-  menu.classList.toggle("hidden");
-}
-</script>
-
-        <script>
-
-
-
-function calculateCGPA(semesters) {
-    let totalCredits = 0;
-    let totalPoints = 0;
-
-    semesters.forEach(sem => {
-        sem.subjects.forEach(sub => {
-            const gp = GRADE_POINTS[sub.grade] ?? 0;
-            const credits = parseFloat(sub.credits || 0);
-            totalCredits += credits;
-            totalPoints += gp * credits;
-        });
-    });
-
-    return totalCredits === 0 ? "0.00" : (totalPoints / totalCredits).toFixed(2);
-}
-
-
-
-/* ---------- Spotlight ---------- */
-document.addEventListener("mousemove", e => {
-    const s = document.getElementById("spotlight");
-    s.style.setProperty("--x", e.clientX + "px");
-    s.style.setProperty("--y", e.clientY + "px");
-});
-
-/* ---------- Greeting ---------- */
-window.onload = () => {
-    const g = document.getElementById("timeGreeting");
-    const h = new Date().getHours();
-    g.innerText =
-        h < 12 ? "— Good Morning  Bro—" :
-        h < 17 ? "— Good Afternoon Bro—" :
-                 "— Good Evening Bro—";
-    g.classList.remove("opacity-0");
-};
-
-/* ---------- Helpers ---------- */
-function countUp(id, end) {
-    const el = document.getElementById(id);
-    const start = performance.now();
-    const dur = 1200;
-
-    function tick(t) {
-        const p = Math.min((t - start) / dur, 1);
-        el.innerText = (p * end).toFixed(2);
-        if (p < 1) requestAnimationFrame(tick);
-    }
-    requestAnimationFrame(tick);
-}
-
-function createBurst() {
-    const box = document.getElementById("burst-container");
-    const icons = ["🔥","✨","🎓","⚡","✅"];
-    for (let i = 0; i < 15; i++) {
-        const d = document.createElement("div");
-        d.className = "particle";
-        d.innerText = icons[Math.floor(Math.random()*icons.length)];
-        d.style.left = "50%";
-        d.style.top = "50%";
-        d.style.setProperty("--tx",(Math.random()*400-200)+"px");
-        d.style.setProperty("--ty",(Math.random()*400-200)+"px");
-        box.appendChild(d);
-        setTimeout(()=>d.remove(),1000);
-    }
-}
-
-/* ---------- Render Result ---------- */
-function displayResult(data) {
-    document.getElementById("resName").innerText = data.name;
-document.getElementById("resRoll").innerText = data.hallTicket;
-
-    countUp("resCgpa", data.cgpa || 0);
-    countUp("resSgpa", data.sgpa || 0);
-
-    const tbody = document.getElementById("resultTableBody");
-    tbody.innerHTML = "";
-
-    data.subjects.forEach((s, i) => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-            <td class="px-6 py-4 text-[10px] text-zinc-500">${s.code}</td>
-            <td class="px-6 py-4 font-bold">${s.name}</td>
-            <td class="px-6 py-4 text-center">${s.internal}</td>
-            <td class="px-6 py-4 text-center">${s.external}</td>
-            <td class="px-6 py-4 text-center">${s.internal + s.external}</td>
-            <td class="px-6 py-4 text-center">
-                <span class="grade-badge">${s.grade}</span>
-            </td>
-            <td class="px-6 py-4 text-center">${s.credits}</td>
-        `;
-        tbody.appendChild(tr);
-    });
-
-    document.getElementById("resultContainer").classList.remove("hidden");
-}
-
-/* ================= GLOBAL STATE ================= */
-
-let FULL_RESULT = null;
-let CURRENT_VIEW = "all";
-
-const GRADE_POINTS = {
-  "O": 10,
-  "A+": 9,
-  "A": 8,
-  "B+": 7,
-  "B": 6,
-  "C": 5,
-  "D": 4,
-  "F": 0,
-  "S": 0
-};
-
-/* ================= MARK SUPPLY ================= */
-/* ================= MARK ATTEMPTS GLOBALLY ================= */
-function markSupplySubjects(semesters) {
-  if (!Array.isArray(semesters)) return;
-
-  const subjectAttemptCount = new Map();
-
-  // Iterate through all semesters to calculate attempt numbers
-  semesters.forEach(sem => {
-    if (!Array.isArray(sem.subjects)) return;
-
-    sem.subjects.forEach(sub => {
-      const key = `${sub.subjectCode || sub.code}`; 
-      
-      // Increment the counter for this specific subject code
-      const currentCount = (subjectAttemptCount.get(key) || 0) + 1;
-      subjectAttemptCount.set(key, currentCount);
-      
-      // Save the attempt number into the subject object
-      sub.attemptNumber = currentCount;
-      
-      // Define if it is a regular or supply attempt
-      sub.attempt = currentCount === 1 ? "regular" : "supply";
-    });
-  });
-}
-
-
-
-/* ================= SEARCH ================= */
-/* ================= SEARCH ================= */
-async function searchResult() {
-    const htno = document.getElementById("hallTicketInput").value.trim().toUpperCase();
-    const errorMsg = document.getElementById("errorMsg");
-    const errorText = document.getElementById("errorText");
-    const loading = document.getElementById("loadingState");
-    const resultBox = document.getElementById("resultContainer");
-
-    errorMsg.classList.add("hidden");
-    resultBox.classList.add("hidden");
-
-    if (!htno) {
-        errorText.innerText = "Enter Hall Ticket Number";
-        errorMsg.classList.remove("hidden");
-        return;
-    }
-
-    loading.classList.remove("hidden");
-
-    try {
-        const API_BASE = "https://jntuh-backend-7rad.onrender.com";
-        const res = await fetch(`${API_BASE}/result/${htno}`);
-        const json = await res.json();
-
-        if (!json || !json.data) throw new Error("No results");
-
-        /* ================= NORMALIZE DATA ================= */
-        let rawData = json.data;
-        if (typeof rawData === 'string') {
-            try {
-                FULL_RESULT = JSON.parse(rawData.replace(/'/g, '"'));
-            } catch (e) {
-                console.error("JSON Parse Error:", e);
-                throw new Error("Data format is invalid");
-            }
-        } else {
-            FULL_RESULT = rawData;
-        }
-
-        /* ================= UPDATE UI HEADER ================= */
-        document.getElementById("resName").innerText = FULL_RESULT.name || "—";
-        document.getElementById("resRoll").innerText = FULL_RESULT.hallTicket || "—";
-        document.getElementById("resFather").innerText = FULL_RESULT.fatherName || "—";
-        document.getElementById("resBranch").innerText = FULL_RESULT.branch || "—";
-        document.getElementById("resCollege").innerText = FULL_RESULT.college || "—";
-        document.getElementById("resCollegeCode").innerText = FULL_RESULT.collegeCode || "—";
-
-        markSupplySubjects(FULL_RESULT.semesters);
-
-        /* ================= DROPDOWN ================= */
-        /* ================= DROPDOWN SETUP ================= */
-        const semSelect = document.getElementById("semesterSelect");
-        semSelect.innerHTML = "";
-
-        const allOpt = document.createElement("option");
-        allOpt.value = "all";
-        allOpt.textContent = "ALL SEMESTERS";
-        semSelect.appendChild(allOpt);
-
-        // Get unique names like ["1-1", "1-2", "2-1"]
-        const uniqueSemNames = [...new Set(FULL_RESULT.semesters.map(s => s.semester))];
-
-        /* Inside searchResult() Dropdown Setup */
-uniqueSemNames.forEach((semName) => {
-    const opt = document.createElement("option");
-    opt.value = semName;
-    // Label clearly so user knows this is the first attempt view
-    opt.textContent = `SEMESTER ${semName}`;
-    semSelect.appendChild(opt);
-});
-
-        semSelect.onchange = (e) => renderResult(e.target.value);
-
-        renderResult("all");
-        loading.classList.add("hidden");
-        resultBox.classList.remove("hidden");
-        createBurst();
-
-    } catch (err) {
-        console.error("searchResult error:", err);
-        errorText.innerText = err.message;
-        errorMsg.classList.remove("hidden");
-        loading.classList.add("hidden");
-    }
-} // <--- This closes searchResult
-
-/* ================= MOVE THESE OUTSIDE ================= */
-
-function calculateSGPA(subjects) {
-    let credits = 0;
-    let points = 0;
-    subjects.forEach(sub => {
-        const gp = GRADE_POINTS[sub.grade] ?? 0;
-        const cr = parseFloat(sub.credits || 0);
-        credits += cr;
-        points += gp * cr;
-    });
-    return credits === 0 ? "0.00" : (points / credits).toFixed(2);
-}
-
-function calculateCGPA(semesters) {
-    let credits = 0;
-    let points = 0;
-    semesters.forEach(sem => {
-        if (!Array.isArray(sem.subjects)) return;
-        sem.subjects.forEach(sub => {
-            const gp = GRADE_POINTS[sub.grade] ?? 0;
-            const cr = parseFloat(sub.credits || 0);
-            credits += cr;
-            points += gp * cr;
-        });
-    });
-    return credits === 0 ? "0.00" : (points / credits).toFixed(2);
-}
-
-/* ================= CONSOLIDATED RENDER LOGIC ================= */
-/* ================= CONSOLIDATED RENDER LOGIC ================= */
-/* ================= CONSOLIDATED RENDER LOGIC ================= */
-function renderResult(mode) {
-    if (!FULL_RESULT || !Array.isArray(FULL_RESULT.semesters)) return;
-    const tbody = document.getElementById("resultTableBody");
-    tbody.innerHTML = "";
-
-    if (mode === "all") {
-        FULL_RESULT.semesters.forEach(sem => renderSemester(sem));
-        addOverallCGPA();
-    } else {
-        const semEntries = FULL_RESULT.semesters.filter(s => s.semester === mode);
-        if (semEntries.length > 0) {
-            const firstAttemptSem = { semester: mode, subjects: [] };
-            const seen = new Set();
-            semEntries.forEach(entry => {
-                entry.subjects.forEach(sub => {
-                    const code = sub.subjectCode || sub.code;
-                    if (!seen.has(code)) {
-                        seen.add(code);
-                        firstAttemptSem.subjects.push(sub);
-                    }
-                });
-            });
-            renderSemester(firstAttemptSem);
-        }
-    }
-}
-
-function renderSemester(sem) {
-    addSemesterHeader(sem.semester);
-    const subjects = sem.subjects || [];
-    
-    // 1. Map to count occurrences of each subject in THIS semester
-    const subjectCounts = {};
-    subjects.forEach(sub => {
-        const code = sub.subjectCode || sub.code;
-        subjectCounts[code] = (subjectCounts[code] || 0) + 1;
-    });
-
-    // 2. Track which codes we have already printed to identify the "repeat" row
-    const printedInThisSem = new Set();
-
-    const regularSubjects = subjects.filter(s => s.attempt === "regular");
-    const supplySubjects = subjects.filter(s => s.attempt === "supply" || s.attempt === "rcrv");
-
-    // Render Regular
-    if (regularSubjects.length > 0) {
-        addSubHeader("REGULAR RESULTS", regularSubjects[0].examCode || "");
-        regularSubjects.forEach(sub => {
-            const code = sub.subjectCode || sub.code;
-            // It is RC/RV ONLY if count > 1 AND we already printed one
-            const isRCRV = subjectCounts[code] > 1 && printedInThisSem.has(code);
-            addRow(sub, isRCRV);
-            printedInThisSem.add(code);
-        });
-    }
-    
-    // Render Supply
-    if (supplySubjects.length > 0) {
-        const lastSupply = supplySubjects[supplySubjects.length - 1];
-        addSubHeader("SUPPLY RESULTS", lastSupply.examCode || "", lastSupply.attemptNumber || "");
-        
-        supplySubjects.forEach(sub => {
-            const code = sub.subjectCode || sub.code;
-            // It is RC/RV ONLY if count > 1 AND we already printed one
-            const isRCRV = subjectCounts[code] > 1 && printedInThisSem.has(code);
-            addRow(sub, isRCRV);
-            printedInThisSem.add(code);
-        });
-    }
-    addSGPARow(calculateSGPA(subjects));
-}
-
-/* ================= TABLE HELPERS ================= */
-function addSemesterHeader(semName) {
-  const tbody = document.getElementById("resultTableBody");
-  const tr = document.createElement("tr");
-  tr.innerHTML = `<td colspan="7" class="bg-zinc-900 text-yellow-400 font-extrabold px-6 py-2 text-center border border-zinc-800">${semName} Results</td>`;
-  tbody.appendChild(tr);
-}
-
-function addSubHeader(title, examCode = "", attemptNum = "") {
-  const tbody = document.getElementById("resultTableBody");
-  const tr = document.createElement("tr");
-  
-  // Badge styling for attempt and exam code
-  const attemptHtml = attemptNum ? `<span class="ml-2 bg-zinc-800 text-[8px] md:text-[9px] px-2 py-0.5 rounded border border-zinc-700 text-zinc-400 font-mono">ATTEMPT: ${attemptNum}</span>` : "";
-  const codeHtml = examCode ? `<span class="ml-2 md:ml-3 text-[8px] md:text-[9px] text-zinc-500 font-mono">[CODE: ${examCode}]</span>` : "";
-  
-  let officialLink = "";
-  if (examCode && FULL_RESULT && FULL_RESULT.hallTicket) {
-      // Official JNTUH result URL construction
-      const baseUrl = "http://results.jntuh.ac.in/results/resultAction";
-      const params = `?degree=btech&examCode=${examCode}&etype=r17&result=null&grad=null&type=intgrade&htno=${FULL_RESULT.hallTicket}`;
-      
-      // "no-print" class ensures this disappears in the PDF print
-      officialLink = `
-        <a href="${baseUrl}${params}" target="_blank" 
-           class="no-print ml-auto text-[8px] md:text-[9px] bg-yellow-accent/10 hover:bg-yellow-accent/20 text-yellow-accent border border-yellow-accent/30 px-2 py-1 rounded transition-all flex items-center gap-1">
-           <i class="fas fa-external-link-alt text-[7px]"></i> OFFICIAL RESULT
-        </a>`;
-  }
-  
-  tr.innerHTML = `
-    <td colspan="7" class="bg-black text-orange-400 font-bold px-4 py-2 uppercase tracking-widest text-[9px] md:text-[11px]">
-      <div class="flex items-center justify-between md:justify-start">
-        <span class="truncate">${title}${attemptHtml}${codeHtml}</span>
-        ${officialLink}
-      </div>
-    </td>`;
-  tbody.appendChild(tr);
-}
-
-function addRow(sub, isRCRV = false) {
-    const tbody = document.getElementById("resultTableBody");
-    const tr = document.createElement("tr");
-    
-    const isFailed = ["F", "S", "ABSENT", "Ab"].includes(sub.grade);
-    
-    // Highlighting Logic
-    let rowBg = "transparent";
-    if (isFailed) {
-        rowBg = "rgba(239, 68, 68, 0.12)"; // Red for Fail
-    } else if (isRCRV) {
-        rowBg = "rgba(59, 130, 246, 0.08)"; // Blue for RC/RV
-    }
-
-    // Badge logic: Only shows if the repeat logic above triggered it
-    const rcrvBadge = isRCRV 
-        ? `<span class="ml-2 bg-blue-500/20 text-blue-400 text-[8px] px-1.5 py-0.5 rounded border border-blue-500/30 font-black">RC/RV</span>` 
-        : "";
-
-    const gradeClass = isFailed ? "text-red-500 font-black" : "text-zinc-200";
-
-    tr.style.backgroundColor = rowBg;
-    tr.innerHTML = `
-        <td class="px-2 md:px-6 py-3 border border-zinc-800 font-mono text-zinc-500 text-[9px] md:text-[12px]">${sub.subjectCode}</td>
-        <td class="px-2 md:px-6 py-3 border border-zinc-800 font-medium text-[9px] md:text-[12px]">
-            <div class="flex items-center">
-                <span class="${isFailed ? 'text-red-300' : ''}">${sub.subjectName}</span>
-                ${rcrvBadge}
-            </div>
-        </td>
-        <td class="px-1 md:px-4 py-3 border border-zinc-800 text-center text-[9px] md:text-[12px]">${sub.internal || '0'}</td>
-        <td class="px-1 md:px-4 py-3 border border-zinc-800 text-center text-[9px] md:text-[12px]">${sub.external || '0'}</td>
-        <td class="px-1 md:px-4 py-3 border border-zinc-800 text-center text-[9px] md:text-[12px]">${sub.total || '0'}</td>
-        <td class="px-1 md:px-4 py-3 border border-zinc-800 text-center text-[9px] md:text-[12px] ${gradeClass}">${sub.grade}</td>
-        <td class="px-1 md:px-4 py-3 border border-zinc-800 text-center text-[9px] md:text-[12px]">${sub.credits}</td>`;
-    
-    tbody.appendChild(tr);
-}
-
-            
-function addSGPARow(sgpa) {
-  const tbody = document.getElementById("resultTableBody");
-  const tr = document.createElement("tr");
-  tr.innerHTML = `<td colspan="7" class="text-right bg-black font-bold text-green-400 px-6 py-3 border border-zinc-800">SGPA : ${sgpa}</td>`;
-  tbody.appendChild(tr);
-}
-
-function addOverallCGPA() {
-  const tbody = document.getElementById("resultTableBody");
-  const tr = document.createElement("tr");
-  tr.innerHTML = `<td colspan="7" class="text-right bg-zinc-950 font-extrabold text-yellow-400 px-6 py-4 border border-zinc-800">OVERALL CGPA : ${calculateCGPA(FULL_RESULT.semesters)}</td>`;
-  tbody.appendChild(tr);
-}
-
-function handlePrint() {
-    const originalTitle = document.title;
-    const rollNo = document.getElementById("resRoll").innerText.trim();
-    if (rollNo && rollNo !== "---") {
-        document.title = rollNo;
-    }
-    window.print();
-    setTimeout(() => { document.title = originalTitle; }, 100);
-}
-
-
-/* ================= ENTER KEY ================= */
-
-document.getElementById("hallTicketInput")
-  ?.addEventListener("keydown", e => {
-    if (e.key === "Enter") searchResult();
-  });
-</script>
-<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
-
-<script>
-(function(){
-  emailjs.init("5kLoGgKCRJnViVqjs"); // 👈 replace
-})();
-
-
-/* ---------- FEEDBACK LOGIC (WEB3FORMS) ---------- */
-async function sendFeedback() {
-    const msgInput = document.getElementById("feedbackMessage");
-    const btn = document.getElementById("feedbackBtn");
-    const status = document.getElementById("feedbackStatus");
-    const rollNo = document.getElementById("resRoll").innerText; // Capture user context
-
-    const msg = msgInput.value.trim();
-    if (!msg) return;
-
-    // UI Loading State
-    btn.innerText = "SENDING...";
-    btn.disabled = true;
-    btn.classList.add("opacity-60", "cursor-not-allowed");
-
-    try {
-        const response = await fetch("https://api.web3forms.com/submit", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-            body: JSON.stringify({
-                access_key: "1545353f-657c-49b8-8de7-d3224c4c4d40", // 👈 PASTE YOUR KEY HERE
-                subject: `New Feedback from ${rollNo}`,
-                from_name: "Backbenchers Results Portal",
-                message: msg,
-                hall_ticket: rollNo
-            }),
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-            // SUCCESS UI
-            status.classList.remove("hidden");
-            status.innerText = "✅ Feedback Sent";
-            msgInput.value = "";
-            btn.innerText = "SENT ✓";
-        } else {
-            throw new Error("Failed to send");
-        }
-    } catch (err) {
-        console.error(err);
-        btn.innerText = "FAILED";
-        status.classList.remove("hidden");
-        status.innerText = "❌ Error Sending";
-        status.classList.replace("text-green-500", "text-red-500");
-    } finally {
-        // Reset button after 3 seconds
-        setTimeout(() => {
-            btn.innerText = "SEND";
-            btn.disabled = false;
-            btn.classList.remove("opacity-60", "cursor-not-allowed");
-            status.classList.add("hidden");
-            // Reset colors for next attempt
-            status.classList.replace("text-red-500", "text-green-500");
-        }, 3000);
-    }
-}
-
-
-
-function handlePrint() {
-    // Save the original title
-    const originalTitle = document.title;
-    
-    // Set the title to the Roll Number (e.g., 22S41A6695.pdf)
-    const rollNo = document.getElementById("resRoll").innerText.trim();
-    if (rollNo && rollNo !== "---") {
-        document.title = rollNo;
-    }
-    
-    // Open print dialog
-    window.print();
-    
-    // Restore the original title after printing starts
-    setTimeout(() => {
-        document.title = originalTitle;
-    }, 100);
-}
-</script>
-<div id="app-download-notification" 
+  <div id="app-download-notification" 
      style="display: none; z-index: 9999;" 
      class="fixed bottom-6 left-6 right-6 md:left-auto md:right-6 md:max-w-md animate-reveal">
     
@@ -1231,45 +289,7 @@ function handlePrint() {
         </a>
     </div>
 </div>
-<script>
-  // Global function to close the notification
-  window.closeAppNotification = function() {
-    const banner = document.getElementById('app-download-notification');
-    if (banner) {
-      banner.style.display = 'none';
-      // Save user preference so it doesn't show again
-      localStorage.setItem('app_result_banner_v1', 'hidden');
-    }
-  };
-
-  // Global function to show the notification
-  window.initAppNotification = function() {
-    const banner = document.getElementById('app-download-notification');
-    const status = localStorage.getItem('app_result_banner_v1');
-
-    // Show only if user hasn't hidden it before
-    if (banner && status !== 'hidden') {
-      banner.style.display = 'block';
-      console.log("App notification initialized");
-    }
-  };
-
-  // Run the notification after 3 seconds so user can see their results first
-  window.addEventListener('load', () => {
-    setTimeout(window.initAppNotification, 3000);
-  });
-document.querySelectorAll('nav a').forEach(link => {
-    link.addEventListener('click', function(e) {
-        // If it's an internal link (Home or Backlog)
-        if (this.getAttribute('href').endsWith('.html')) {
-            const loader = document.getElementById('loadingProgress');
-            if (loader) {
-                loader.style.width = '100%'; // Trigger the yellow bar at the top
-            }
-        }
-    });
-});
-
-    </script>
+</footer>
+<script src="script.js"></script>
 </body>
 </html>
