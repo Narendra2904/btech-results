@@ -33,6 +33,7 @@
             <div class="flex items-center space-x-4 lg:space-x-6 font-bold text-[10px] uppercase tracking-widest text-zinc-500">
                 <a href="/" class="nav-link hover:text-yellow-accent border-b-2 border-yellow-accent pb-1">Home</a>
                 <a href="/result" class="nav-link hover:text-yellow-accent">All Results</a>
+                <a href="/liveresults" class="nav-link hover:text-yellow-accent">Live Results</a>
                 <a href="/backlog" class="nav-link hover:text-yellow-accent">Backlog Report</a>
                 <a href="/creditChecker" class="nav-link hover:text-yellow-accent">Credit Checker</a>
                 <a href="/compare" class="nav-link hover:text-yellow-accent">Compare</a>
@@ -55,6 +56,7 @@
     <div id="mobileMenu" class="md:hidden hidden bg-black border-t border-zinc-800 absolute top-16 left-0 w-full z-50 px-6 py-8 space-y-6 shadow-2xl animate-reveal">
         <a href="/" class="block text-yellow-accent font-black text-xs uppercase tracking-[0.2em] py-2 border-b border-zinc-900"><i class="fas fa-home mr-3"></i> Home</a>
         <a href="/result" class="block text-zinc-400 font-black text-xs uppercase tracking-[0.2em] py-2 border-b border-zinc-900"><i class="fas fa-search mr-3"></i> All Results</a>
+        <a href="/liveresults" class="block text-zinc-400 font-black text-xs uppercase tracking-[0.2em] py-2 border-b border-zinc-900"><i class="fas fa-bolt mr-3"></i> Live Results</a>
         <a href="/backlog" class="block text-zinc-400 font-black text-xs uppercase tracking-[0.2em] py-2 border-b border-zinc-900"><i class="fas fa-exclamation-triangle mr-3"></i> Backlog Report</a>
         <a href="/creditChecker" class="block text-zinc-400 font-black text-xs uppercase tracking-[0.2em] py-2 border-b border-zinc-900"><i class="fas fa-award mr-3"></i> Credit Checker</a>
          <a href="/compare" class="block text-zinc-400 font-black text-xs uppercase tracking-[0.2em] py-2 border-b border-zinc-900"><i class="fas fa-balance-scale mr-3"></i> Compare Results</a>
@@ -80,6 +82,13 @@
     </div>
     <h3 class="text-xs font-black uppercase tracking-widest mb-1">Results</h3>
     <p class="text-[9px] text-zinc-500 uppercase font-bold">Search all Semesters</p>
+</a>
+<a href="liveresults.html" class="bg-zinc-900/30 border border-zinc-800/50 p-6 rounded-2xl flex flex-col items-center justify-center text-center hover:border-blue-500 transition-all group active:scale-95">
+    <div class="w-12 h-12 bg-blue-500/10 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-500 group-hover:text-white transition-colors">
+        <i class="fas fa-bolt"></i>
+    </div>
+    <h3 class="text-xs font-black uppercase tracking-widest mb-1">Live Results</h3>
+    <p class="text-[9px] text-zinc-500 uppercase font-bold">Latest Server Updates</p>
 </a>
 
         <a href="backlog.html" class="bg-zinc-900/30 border border-zinc-800/50 p-6 rounded-2xl flex flex-col items-center justify-center text-center hover:border-yellow-accent transition-all group active:scale-95">
@@ -181,19 +190,32 @@
     </div>
 
     <!-- FEEDBACK -->
-    <div class="bg-zinc-900/50 p-6 rounded-2xl border border-zinc-800/60 max-w-sm mx-auto mt-10">
-  <h4 class="font-black text-[10px] uppercase tracking-[0.3em] mb-4 text-zinc-500">Feedback</h4>
+    <div>
+      <div class="bg-zinc-900/50 p-6 rounded-2xl border border-zinc-800/60">
+        <h4 class="font-black text-[10px] uppercase tracking-[0.3em] mb-4 text-zinc-500">
+          Feedback
+        </h4>
+        <input
+        id="feedbackMessage"
+          type="text"
+          placeholder="Any issues?"
+          class="w-full bg-black border border-zinc-800 rounded-lg
+                 px-4 py-2.5 text-xs mb-3
+                 focus:border-yellow-accent outline-none"
+        />
+    <button
+  id="feedbackBtn"
+  onclick="sendFeedback()"
+  class="w-full bg-yellow-accent text-black font-black
+         py-2.5 rounded-lg text-[10px]
+         hover:bg-yellow-400 transition-all uppercase tracking-widest">
+  SEND
+</button>
 
-  <input id="feedbackName" placeholder="Your Name" class="w-full bg-black border border-zinc-800 rounded-lg px-4 py-2.5 text-xs mb-3 focus:border-yellow-accent outline-none" />
-  <input id="feedbackEmail" type="email" placeholder="Your Email" class="w-full bg-black border border-zinc-800 rounded-lg px-4 py-2.5 text-xs mb-3 focus:border-yellow-accent outline-none" />
-  <textarea id="feedbackMessage" placeholder="Your Feedback" class="w-full bg-black border border-zinc-800 rounded-lg px-4 py-2.5 text-xs mb-3 focus:border-yellow-accent outline-none h-20"></textarea>
-
-  <button id="feedbackBtn" class="w-full bg-yellow-accent text-black font-black py-2.5 rounded-lg text-[10px] hover:bg-yellow-400 transition-all uppercase tracking-widest">
-    SEND
-  </button>
-
-  <p id="feedbackStatus" class="hidden mt-3 text-[10px] font-black uppercase tracking-widest text-green-500 text-center"></p>
-</div>
+<p id="feedbackStatus"
+   class="hidden mt-3 text-[10px] font-black uppercase tracking-widest text-green-500 text-center">
+  ✅ Feedback Sent
+</p>
 
 
       </div>
