@@ -252,7 +252,7 @@ async function searchResult() {
     loading.classList.remove("hidden");
 
     try {
-        const API_BASE = "https://btech-backend.vercel.app";
+        const API_BASE = "https://jntuh-backend-7rad.onrender.com";
         const res = await fetch(`${API_BASE}/result/${htno}`);
         const json = await res.json();
 
@@ -718,7 +718,7 @@ async function searchCredits() {
         // Step 2: Status Update
         setTimeout(() => { statusText.innerText = "Decrypting Records..."; }, 800);
 
-        const res = await fetch(`https://btech-backend.vercel.app/result/${htno}`);
+        const res = await fetch(`https://jntuh-backend-7rad.onrender.com/result/${htno}`);
         const json = await res.json();
         
         if (!json || !json.data) throw new Error("Data not found");
@@ -835,7 +835,7 @@ async function fetchCredits() {
     
     try {
         // Fetch data from the JNTUH Backend
-        const response = await fetch(`https://btech-backend.vercel.app/result/${ht}`);
+        const response = await fetch(`https://jntuh-backend-7rad.onrender.com/result/${ht}`);
         const json = await response.json();
         
         if (!json || !json.data) throw new Error("Data not found for this Roll Number");
@@ -922,8 +922,8 @@ async function compareResults() {
     
     try {
         const [res1, res2] = await Promise.all([
-            fetch(`https://btech-backend.vercel.app/result/${ht1}`).then(r => r.json()),
-            fetch(`https://btech-backend.vercel.app/result/${ht2}`).then(r => r.json())
+            fetch(`https://jntuh-backend-7rad.onrender.com/result/${ht1}`).then(r => r.json()),
+            fetch(`https://jntuh-backend-7rad.onrender.com/result/${ht2}`).then(r => r.json())
         ]);
 
         if (!res1.data || !res2.data) throw new Error("Roll Number(s) not found");
@@ -1129,7 +1129,7 @@ async function sendFeedback() {
             error.classList.add("hidden"); area.classList.add("hidden"); loader.classList.remove("hidden");
 
             try {
-                const res = await fetch(`https://btech-backend.vercel.app/result/${ht}`);
+                const res = await fetch(`https://jntuh-backend-7rad.onrender.com/result/${ht}`);
                 const json = await res.json();
                 if (!json.data) throw new Error("Roll Number not found.");
 
@@ -1244,6 +1244,7 @@ async function sendFeedback() {
         }
     });
 });
+
 
 
 
