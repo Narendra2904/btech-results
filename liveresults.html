@@ -684,16 +684,31 @@ function renderResultTable(studentData) {
   const tbody = document.getElementById("resultTableBody");
   tbody.innerHTML = "";
 
+  // Helper to safely get code regardless of casing
+  const getCode = (sub) => {
+      const code = sub.examCode || sub.exam_code || "";
+      return code.toString().trim();
+  };
+
+  // 1. Check valid semesters
   const selectedSemesters = studentData.semesters.filter(sem =>
-    sem.subjects.some(sub => sub.examCode.toString().trim() === SELECTED_EXAM_CODE)
+    sem.subjects.some(sub => getCode(sub) === SELECTED_EXAM_CODE)
   );
+
+  // Debug: If empty, show what codes ARE available
+  if (selectedSemesters.length === 0) {
+      console.warn("No semesters matched code:", SELECTED_EXAM_CODE);
+      const allCodes = studentData.semesters.flatMap(s => s.subjects.map(sub => getCode(sub)));
+      console.log("Available codes in data:", [...new Set(allCodes)]);
+  }
 
   let semForHeading = null;
   let subsForHeading = [];
 
   selectedSemesters.forEach(sem => {
+    // 2. Filter subjects safely
     const filteredSubs = sem.subjects.filter(
-      s => s.examCode.toString().trim() === SELECTED_EXAM_CODE
+      sub => getCode(sub) === SELECTED_EXAM_CODE
     );
 
     if (!semForHeading && filteredSubs.length > 0) {
@@ -723,37 +738,33 @@ function renderResultTable(studentData) {
 
     // Semester SGPA row
     const ht = document.getElementById("hallTicketInput").value.trim().toUpperCase();
-const officialLink = `http://results.jntuh.ac.in/results/resultAction?degree=btech&examCode=${SELECTED_EXAM_CODE}&etype=r17&result=null&grad=null&type=intgrade&htno=${ht}`;
+    const officialLink = `http://results.jntuh.ac.in/results/resultAction?degree=btech&examCode=${SELECTED_EXAM_CODE}&etype=r17&result=null&grad=null&type=intgrade&htno=${ht}`;
 
-const sgpaRow = document.createElement("tr");
-sgpaRow.innerHTML = `
-  <td colspan="6" class="border-2 border-black text-right font-black py-1 px-3">
-    ${semText} SGPA: ${sgpa} (${status})
-  </td>
-  <td class="border-2 border-black text-center">
-    <a href="${officialLink}" target="_blank" class="text-blue-600 font-bold underline text-xs">
-      Direct Link
-    </a>
-  </td>`;
+    const sgpaRow = document.createElement("tr");
+    sgpaRow.innerHTML = `
+      <td colspan="6" class="border-2 border-black text-right font-black py-1 px-3">
+        ${semText} SGPA: ${sgpa} (${status})
+      </td>
+      <td class="border-2 border-black text-center">
+        <a href="${officialLink}" target="_blank" class="text-blue-600 font-bold underline text-xs">
+          Direct Link
+        </a>
+      </td>`;
 
     tbody.appendChild(sgpaRow);
   });
 
-  // ✨ Copy SAME SGPA + result logic for TOP year heading
+  // Heading Logic
   if (semForHeading && subsForHeading.length > 0) {
     const semText = convertSemToRomanText(semForHeading);
-    const sgpa = calculateSGPA(subsForHeading);
-    const status = detectResult(subsForHeading);
-
-    document.getElementById("resultYearHeading").innerText =
-      `Results of ${semText} B.Tech Exams `;
+    document.getElementById("resultYearHeading").innerText = `Results of ${semText} B.Tech Exams`;
   } else {
-    document.getElementById("resultYearHeading").innerText = "---";
+    document.getElementById("resultYearHeading").innerText = "No Results for Exam Code " + SELECTED_EXAM_CODE;
   }
 
-  // Update footer panel GPA + result
+  // Footer GPA
   const finalSubs = selectedSemesters.flatMap(s => s.subjects)
-                    .filter(s => s.examCode.toString().trim() === SELECTED_EXAM_CODE);
+                    .filter(s => getCode(s) === SELECTED_EXAM_CODE);
 
   document.getElementById("gpaValue").innerText = studentData.gpa || calculateSGPA(finalSubs);
   document.getElementById("resultStatus").innerText = studentData.result || detectResult(finalSubs);
@@ -774,11 +785,18 @@ async function fetchLiveResults() {
   resultBox.classList.add("hidden");
 
   try {
+    console.log("Fetching for:", ht); // Debug Log 1
     const res = await fetch(API_BASE_URL + ht);
     const json = await res.json();
-    if (!json?.data?.semesters) throw new Error("No results found!");
+    
+    console.log("API Response:", json); // Debug Log 2: Check your console for this!
 
-    const studentData = json.data;
+    // Handle if backend returns data directly OR inside a .data wrapper
+    const studentData = json.data || json;
+
+    if (!studentData || !studentData.semesters) {
+        throw new Error("Invalid data structure received from server");
+    }
 
     // Fill student panel info
     document.getElementById("resName").innerText = studentData.name || "---";
@@ -796,8 +814,9 @@ async function fetchLiveResults() {
     resultBox.classList.add("animate-reveal");
 
   } catch (err) {
+    console.error(err);
     loader.classList.add("hidden");
-    errorText.innerText = err.message;
+    errorText.innerText = err.message || "Failed to load results";
     errorBox.classList.remove("hidden");
   }
 }
