@@ -3,10 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta
-  name="description"
-  content="Get JNTUH Live results instantly without server issues. Fast, reliable results portal for JNTUH students."
-/>
     <title>LIVE RESULTS | BACK.BENCHERS</title>
     <link rel="icon" type="image/png" href="./assets/fav.png">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -257,7 +253,7 @@
         <div class="text-center mb-10 search-section">
             <p id="timeGreeting" class="text-yellow-accent text-[10px] font-black uppercase tracking-[0.3em] mb-2 transition-opacity duration-1000">LIVE UPDATES</p>
             <!-- UPDATED HEADING FOR III-II -->
-            <h1 class="text-3xl md:text-4xl font-black heading-tight mb-3 text-white">JNTUH B.Tech <span class="text-yellow-accent"> RESULTS</span></h1>
+            <h1 class="text-3xl md:text-4xl font-black heading-tight mb-3 text-white">JNTUH B.Tech <span class="text-yellow-accent">RESULTS</span></h1>
             <p class="text-zinc-500 text-sm max-w-md mx-auto leading-relaxed">R22 Regular/Supply Results Released. Enter your HallTicket below.</p>
         </div>
 
@@ -339,7 +335,7 @@
                             <td class="p-0 border-r border-zinc-800">
                                 <div class="px-2 md:px-4 py-2">
                                     <p class="text-[7px] md:text-micro font-black text-zinc-500 uppercase">College</p>
-                                    <p id="resCollege" class="font-bold text-[8px] md:text-[13px] leading-tight truncate">---</p>
+                                    <p id="resCollege" class="font-bold text-[8px] md:text-[13px] leading-tight truncate text-zinc-300">JNTUH COLLEGE OF ENGINEERING</p>
                                 </div>
                             </td>
                             <td class="p-0">
@@ -643,7 +639,7 @@ document.getElementById("socialPopup")
 
 
 
-const SELECTED_EXAM_CODE = "1921";
+const SELECTED_EXAM_CODE = "1813";
 const API_BASE_URL = "https://jntuh-backend-7rad.onrender.com/result/";
 
 // Convert semester like 3-1 → III-I (table use only)
@@ -785,7 +781,6 @@ async function fetchLiveResults() {
     document.getElementById("resRoll").innerText = studentData.hallTicket || ht;
     document.getElementById("resFather").innerText = studentData.fatherName || "---";
     document.getElementById("resCollegeCode").innerText = studentData.collegeCode || "---";
-    document.getElementById("resCollege").innerText = studentData.college || "—";  
     document.getElementById("resBranch").innerText = studentData.branch || "---";
 
     // Render ONLY selected exam results
